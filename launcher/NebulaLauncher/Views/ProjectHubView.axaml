@@ -169,6 +169,9 @@
                                         <MenuItem Header="Open in IDE"
                                                   Command="{Binding OpenInIdeCommand}"/>
                                         <Separator/>
+                                        <MenuItem Header="Open on GitHub"
+                                                  Command="{Binding OpenOnGitHubCommand}"
+                                                  IsEnabled="{Binding HasGitHubUrl}"/>
                                         <MenuItem Header="Show in Files"
                                                   Command="{Binding ShowInFilesCommand}"/>
                                         <Separator/>
@@ -195,14 +198,28 @@
                                                 Spacing="8"
                                                 VerticalAlignment="Center">
 
-                                        <Border IsVisible="{Binding HasGitRepo}"
-                                                Background="{DynamicResource NebulaAccentSurfaceBrush}"
-                                                CornerRadius="3"
-                                                Padding="6,2">
-                                            <TextBlock Text="{Binding GitBranch}"
-                                                       FontSize="11"
-                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
-                                        </Border>
+                                        <!-- Branch badge — clickable when GitHub is linked -->
+                                        <Button IsVisible="{Binding HasGitRepo}"
+                                                Classes="ghost"
+                                                Padding="0"
+                                                Command="{Binding OpenOnGitHubCommand}"
+                                                IsEnabled="{Binding HasGitHubUrl}"
+                                                ToolTip.Tip="{Binding GitHubUrl}">
+                                            <Border Background="{DynamicResource NebulaAccentSurfaceBrush}"
+                                                    CornerRadius="3"
+                                                    Padding="6,2">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <!-- GitHub icon dot — only when linked -->
+                                                    <Ellipse IsVisible="{Binding HasGitHubUrl}"
+                                                             Width="6" Height="6"
+                                                             Fill="{DynamicResource NebulaAccentBrush}"
+                                                             VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding GitBranch}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </Button>
 
                                         <Border Background="{DynamicResource NebulaSurface2Brush}"
                                                 CornerRadius="3"
@@ -248,6 +265,9 @@
                                         <MenuItem Header="Open"          Command="{Binding OpenCommand}"/>
                                         <MenuItem Header="Open in IDE"   Command="{Binding OpenInIdeCommand}"/>
                                         <Separator/>
+                                        <MenuItem Header="Open on GitHub"
+                                                  Command="{Binding OpenOnGitHubCommand}"
+                                                  IsEnabled="{Binding HasGitHubUrl}"/>
                                         <MenuItem Header="Show in Files" Command="{Binding ShowInFilesCommand}"/>
                                         <Separator/>
                                         <MenuItem Header="Remove from List" Command="{Binding RemoveCommand}"/>
@@ -283,13 +303,25 @@
                                             <StackPanel Grid.Column="0"
                                                         Orientation="Horizontal"
                                                         Spacing="4">
-                                                <Border IsVisible="{Binding HasGitRepo}"
-                                                        Background="{DynamicResource NebulaAccentSurfaceBrush}"
-                                                        CornerRadius="3" Padding="5,2">
-                                                    <TextBlock Text="{Binding GitBranch}"
-                                                               FontSize="10"
-                                                               Foreground="{DynamicResource NebulaAccentBrush}"/>
-                                                </Border>
+                                                <Button IsVisible="{Binding HasGitRepo}"
+                                                        Classes="ghost"
+                                                        Padding="0"
+                                                        Command="{Binding OpenOnGitHubCommand}"
+                                                        IsEnabled="{Binding HasGitHubUrl}"
+                                                        ToolTip.Tip="{Binding GitHubRepoSlug}">
+                                                    <Border Background="{DynamicResource NebulaAccentSurfaceBrush}"
+                                                            CornerRadius="3" Padding="5,2">
+                                                        <StackPanel Orientation="Horizontal" Spacing="3">
+                                                            <Ellipse IsVisible="{Binding HasGitHubUrl}"
+                                                                     Width="5" Height="5"
+                                                                     Fill="{DynamicResource NebulaAccentBrush}"
+                                                                     VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding GitBranch}"
+                                                                       FontSize="10"
+                                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Button>
                                                 <Border Background="{DynamicResource NebulaSurface3Brush}"
                                                         CornerRadius="3" Padding="5,2">
                                                     <TextBlock Text="{Binding EngineVersion}"

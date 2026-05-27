@@ -41,6 +41,13 @@ public partial class ProjectItemViewModel : ViewModelBase
 
     [ObservableProperty] private bool    _hasGitRepo;
     [ObservableProperty] private string? _gitBranch;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasGitHubUrl))]
+    [NotifyPropertyChangedFor(nameof(GitHubRepoSlug))]
+    private string? _gitHubUrl;
+
+    public bool    HasGitHubUrl   => !string.IsNullOrEmpty(GitHubUrl);
+    public string? GitHubRepoSlug => GitHubService.GetRepoSlug(GitHubUrl);
 
     public ProjectItemViewModel(
         NebulaProject project,
@@ -53,6 +60,7 @@ public partial class ProjectItemViewModel : ViewModelBase
 
         _hasGitRepo = project.HasGitRepo;
         _gitBranch  = project.GitBranch;
+        _gitHubUrl  = project.GitHubUrl;
 
         var idx = Math.Abs(project.Name.GetHashCode()) % _cardPalette.Length;
         CardColor = new SolidColorBrush(Color.Parse(_cardPalette[idx]));
@@ -60,6 +68,14 @@ public partial class ProjectItemViewModel : ViewModelBase
 
     [RelayCommand] private void Open()   => _onOpen(this);
     [RelayCommand] private void Remove() => _onRemove(this);
+
+    [RelayCommand]
+    private void OpenOnGitHub()
+    {
+        if (string.IsNullOrEmpty(GitHubUrl)) return;
+        try { Process.Start(new ProcessStartInfo("xdg-open", $"\"{GitHubUrl}\"") { UseShellExecute = true }); }
+        catch { }
+    }
 
     [RelayCommand]
     private void OpenInIde()
@@ -80,10 +96,13 @@ public partial class ProjectItemViewModel : ViewModelBase
     public void RefreshGitStatus()
     {
         var (hasRepo, branch) = GitService.GetStatus(Project.Path);
+        var gitHubUrl         = GitService.GetGitHubUrl(Project.Path);
         HasGitRepo         = hasRepo;
         GitBranch          = branch;
+        GitHubUrl          = gitHubUrl;
         Project.HasGitRepo = hasRepo;
         Project.GitBranch  = branch;
+        Project.GitHubUrl  = gitHubUrl;
     }
 
     private static string FormatDate(DateTime dt)

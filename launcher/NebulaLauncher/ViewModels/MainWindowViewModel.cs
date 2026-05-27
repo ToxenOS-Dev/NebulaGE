@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NebulaLauncher.Services;
 
 namespace NebulaLauncher.ViewModels;
 
@@ -24,6 +25,11 @@ public partial class MainWindowViewModel : ViewModelBase
     public bool IsProjectsSelected => SelectedNav == NavItem.Projects;
     public bool IsEnginesSelected  => SelectedNav == NavItem.Engines;
     public bool IsSettingsSelected => SelectedNav == NavItem.Settings;
+
+    // ── GitHub connection ─────────────────────────────────────
+    public string? GitHubUser { get; } = GitHubService.GetAuthenticatedUser();
+    public bool    HasGitHub  => GitHubUser is not null;
+    public bool    NoGitHub   => GitHubUser is null;
 
     public MainWindowViewModel()
     {

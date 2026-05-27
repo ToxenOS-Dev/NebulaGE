@@ -33,4 +33,7 @@ public class NebulaProject
 
     [JsonPropertyName("gitBranch")]
     public string? GitBranch { get; set; }
+
+    [JsonPropertyName("gitHubUrl")]
+    public string? GitHubUrl { get; set; }
 }

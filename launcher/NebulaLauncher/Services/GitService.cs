@@ -46,4 +46,51 @@ public static class GitService
         if (!HasRepo(path)) return (false, null);
         return (true, GetBranch(path));
     }
+
+    /// <summary>
+    /// Reads the origin remote URL from .git/config and normalises it to an
+    /// https://github.com/… URL.  Returns null if no origin or not GitHub.
+    /// No process spawn — reads the config file directly.
+    /// </summary>
+    public static string? GetGitHubUrl(string path)
+    {
+        var configFile = Path.Combine(path, ".git", "config");
+        if (!File.Exists(configFile)) return null;
+
+        try
+        {
+            bool inOrigin = false;
+            foreach (var line in File.ReadAllLines(configFile))
+            {
+                var t = line.Trim();
+                if (t == "[remote \"origin\"]") { inOrigin = true; continue; }
+                if (t.StartsWith('['))           { inOrigin = false; continue; }
+
+                if (inOrigin && t.StartsWith("url = "))
+                    return NormalizeGitHubUrl(t["url = ".Length..].Trim());
+            }
+        }
+        catch { }
+
+        return null;
+    }
+
+    // Converts both SSH and HTTPS git remote URLs to an https://github.com/… link.
+    private static string? NormalizeGitHubUrl(string url)
+    {
+        // SSH:   git@github.com:user/repo.git  →  https://github.com/user/repo
+        if (url.StartsWith("git@github.com:", StringComparison.Ordinal))
+        {
+            var rest = url["git@github.com:".Length..];
+            if (rest.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                rest = rest[..^4];
+            return $"https://github.com/{rest}";
+        }
+
+        // HTTPS: https://github.com/user/repo[.git]
+        if (url.Contains("github.com", StringComparison.OrdinalIgnoreCase))
+            return url.EndsWith(".git", StringComparison.OrdinalIgnoreCase) ? url[..^4] : url;
+
+        return null; // not a GitHub remote
+    }
 }
