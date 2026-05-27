@@ -52,13 +52,13 @@ public partial class GitHubSessionViewModel : ViewModelBase
         AwaitingBrowserAuth = true;
         try
         {
+            // UseShellExecute = true gives gh a proper environment / TTY so
+            // it can call xdg-open and launch the browser OAuth flow.
+            // We still get the Process back and can await its exit.
             using var proc = Process.Start(new ProcessStartInfo(
                 "gh", "auth login --web --git-protocol https")
             {
-                UseShellExecute        = false,
-                CreateNoWindow         = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError  = true,
+                UseShellExecute = true,
             });
 
             if (proc is not null)
