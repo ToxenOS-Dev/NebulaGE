@@ -55,21 +55,29 @@
         <!-- ── Body ────────────────────────────────────────── -->
         <Grid Grid.Row="1" ColumnDefinitions="*,1,240">
 
-            <!-- ── Left: template image grid ─────────────── -->
+            <!-- ── Left: mode toggle + template grid / clone form ── -->
             <Grid Grid.Column="0"
                   RowDefinitions="Auto,*"
                   Margin="20,18,16,16">
 
-                <!-- "TEMPLATE" label -->
-                <TextBlock Grid.Row="0"
-                           Text="TEMPLATE"
-                           FontSize="10" FontWeight="Medium"
-                           LetterSpacing="1.2"
-                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
-                           Margin="0,0,0,10"/>
+                <!-- Mode toggle pills -->
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            Margin="0,0,0,14">
+                    <Button Classes="settings-tab"
+                            Classes.active="{Binding IsNewMode}"
+                            Command="{Binding SetNewModeCommand}"
+                            Padding="12,5">New Project</Button>
+                    <Button Classes="settings-tab"
+                            Classes.active="{Binding IsCloneMode}"
+                            Command="{Binding SetCloneModeCommand}"
+                            Padding="12,5">Clone from GitHub</Button>
+                </StackPanel>
 
-                <!-- Cards — negative right margin cancels trailing card margin -->
+                <!-- ── New Project: template cards ────────────── -->
                 <ItemsControl Grid.Row="1"
+                              IsVisible="{Binding IsNewMode}"
                               ItemsSource="{Binding TemplateCards}"
                               Margin="0,0,-8,0">
                     <ItemsControl.ItemsPanel>
@@ -155,6 +163,71 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
+                <!-- ── Clone from GitHub form ─────────────────── -->
+                <StackPanel Grid.Row="1"
+                            IsVisible="{Binding IsCloneMode}"
+                            Spacing="16">
+
+                    <!-- URL input -->
+                    <StackPanel Spacing="7">
+                        <TextBlock Text="REPOSITORY URL"
+                                   FontSize="10" FontWeight="Medium"
+                                   LetterSpacing="1.2"
+                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                        <TextBox Text="{Binding CloneUrl}"
+                                 Watermark="https://github.com/user/repo"
+                                 FontFamily="Cascadia Code,JetBrains Mono,monospace"
+                                 FontSize="12"/>
+                        <!-- Error hint -->
+                        <TextBlock IsVisible="{Binding CloneUrlError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Text="{Binding CloneUrlError}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource NebulaErrorBrush}"/>
+                    </StackPanel>
+
+                    <!-- Repo preview card (shown when URL is valid) -->
+                    <Border IsVisible="{Binding HasValidCloneUrl}"
+                            Background="{DynamicResource NebulaSurface2Brush}"
+                            BorderBrush="{DynamicResource NebulaAccentBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="14,12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="WILL CLONE"
+                                       FontSize="9" FontWeight="Medium"
+                                       LetterSpacing="1.0"
+                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                            <TextBlock Text="{Binding CloneRepoSlug}"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
+                            <TextBlock Text="{Binding CloneUrl}"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Empty state prompt -->
+                    <StackPanel IsVisible="{Binding !HasValidCloneUrl}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="8"
+                                Margin="0,20">
+                        <TextBlock Text="Paste a GitHub repo URL above"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="The project will be cloned into your selected location."
+                                   FontSize="11"
+                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="320"/>
+                    </StackPanel>
+
+                </StackPanel>
+
             </Grid>
 
             <!-- Column separator -->
@@ -212,7 +285,7 @@
                         Click="OnCancel"/>
                 <Button Grid.Column="3"
                         Classes="accent"
-                        Content="+ Create Project"
+                        Content="{Binding CreateButtonLabel}"
                         MinWidth="140" Padding="14,7"
                         IsEnabled="{Binding CanCreate}"
                         Click="OnCreate"/>

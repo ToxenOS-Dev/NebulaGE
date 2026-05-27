@@ -27,9 +27,8 @@ public partial class MainWindowViewModel : ViewModelBase
     public bool IsSettingsSelected => SelectedNav == NavItem.Settings;
 
     // ── GitHub connection ─────────────────────────────────────
-    public string? GitHubUser { get; } = GitHubService.GetAuthenticatedUser();
-    public bool    HasGitHub  => GitHubUser is not null;
-    public bool    NoGitHub   => GitHubUser is null;
+    /// <summary>Singleton shared with the Settings page so login/logout updates the sidebar live.</summary>
+    public GitHubSessionViewModel GitHub => GitHubSessionViewModel.Current;
 
     public MainWindowViewModel()
     {

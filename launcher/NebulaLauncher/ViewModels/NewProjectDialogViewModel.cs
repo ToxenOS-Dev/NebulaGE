@@ -5,6 +5,7 @@ using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NebulaLauncher.Services;
 
 namespace NebulaLauncher.ViewModels;
 
@@ -70,6 +71,20 @@ public partial class NewProjectDialogViewModel : ViewModelBase
 
     public IReadOnlyList<TemplateCardViewModel> TemplateCards { get; }
 
+    // ── Mode toggle ──────────────────────────────────────────
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNewMode))]
+    [NotifyPropertyChangedFor(nameof(IsCloneMode))]
+    [NotifyPropertyChangedFor(nameof(CanCreate))]
+    [NotifyPropertyChangedFor(nameof(CreateButtonLabel))]
+    private bool _cloneModeActive;
+
+    public bool IsNewMode   => !CloneModeActive;
+    public bool IsCloneMode =>  CloneModeActive;
+
+    [RelayCommand] private void SetNewMode()   => CloneModeActive = false;
+    [RelayCommand] private void SetCloneMode() => CloneModeActive = true;
+
     // ── Observable state ─────────────────────────────────────
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCreate))]
@@ -81,8 +96,38 @@ public partial class NewProjectDialogViewModel : ViewModelBase
     [ObservableProperty]
     private TemplateOption _selectedTemplate;
 
+    // ── Clone URL ─────────────────────────────────────────────
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanCreate))]
+    [NotifyPropertyChangedFor(nameof(HasValidCloneUrl))]
+    [NotifyPropertyChangedFor(nameof(CloneRepoSlug))]
+    [NotifyPropertyChangedFor(nameof(CloneUrlError))]
+    private string _cloneUrl = string.Empty;
+
+    public bool    HasValidCloneUrl => IsValidGitHubUrl(CloneUrl);
+    public string? CloneRepoSlug    => GitHubService.GetRepoSlug(NormalizeCloneUrl(CloneUrl));
+    public string? CloneUrlError    =>
+        string.IsNullOrWhiteSpace(CloneUrl) || HasValidCloneUrl
+            ? null
+            : "Paste a full GitHub URL, e.g. https://github.com/user/repo";
+
+    partial void OnCloneUrlChanged(string value)
+    {
+        // Auto-fill project name from the repo slug when URL becomes valid
+        var slug = CloneRepoSlug;
+        if (slug is not null)
+        {
+            var repoName = slug.Split('/').LastOrDefault();
+            if (!string.IsNullOrEmpty(repoName))
+                ProjectName = repoName;
+        }
+    }
+
     // ── Derived ──────────────────────────────────────────────
-    public bool CanCreate => !string.IsNullOrWhiteSpace(ProjectName);
+    public bool   CanCreate         => IsCloneMode
+                                           ? HasValidCloneUrl && !string.IsNullOrWhiteSpace(ProjectName)
+                                           : !string.IsNullOrWhiteSpace(ProjectName);
+    public string CreateButtonLabel => IsCloneMode ? "Clone & Open" : "+ Create Project";
 
     // ── Constructor ──────────────────────────────────────────
     public NewProjectDialogViewModel()
@@ -97,6 +142,42 @@ public partial class NewProjectDialogViewModel : ViewModelBase
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             "Projects");
+
+    // ── URL helpers ───────────────────────────────────────────
+    private static bool IsValidGitHubUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return false;
+        var norm = NormalizeCloneUrl(url);
+        return norm is not null;
+    }
+
+    public static string? NormalizeCloneUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return null;
+
+        url = url.Trim();
+
+        // SSH: git@github.com:user/repo[.git]
+        if (url.StartsWith("git@github.com:", StringComparison.OrdinalIgnoreCase))
+        {
+            var path = url["git@github.com:".Length..];
+            if (path.EndsWith(".git", StringComparison.OrdinalIgnoreCase)) path = path[..^4];
+            return $"https://github.com/{path}";
+        }
+
+        // HTTPS: https://github.com/user/repo[.git]
+        if (url.Contains("github.com", StringComparison.OrdinalIgnoreCase))
+        {
+            if (url.EndsWith(".git", StringComparison.OrdinalIgnoreCase)) url = url[..^4];
+            // Make sure it has at least user/repo after github.com/
+            var afterHost = url[(url.IndexOf("github.com", StringComparison.OrdinalIgnoreCase) + "github.com".Length)..];
+            var parts = afterHost.Trim('/').Split('/');
+            if (parts.Length >= 2 && !string.IsNullOrEmpty(parts[0]) && !string.IsNullOrEmpty(parts[1]))
+                return url;
+        }
+
+        return null;
+    }
 
     // ── Internal ─────────────────────────────────────────────
     private void OnCardSelected(TemplateCardViewModel selected)

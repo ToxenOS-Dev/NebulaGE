@@ -55,7 +55,8 @@ public partial class SettingsViewModel : ViewModelBase
 
     public bool NoIdesFound => DetectedIdes.Count == 0;
 
-    public ThemesViewModel Themes { get; } = new();
+    public ThemesViewModel       Themes { get; } = new();
+    public GitHubSessionViewModel GitHub => GitHubSessionViewModel.Current;
 
     public SettingsViewModel()
     {
