@@ -111,7 +111,6 @@
 
     <!-- ── Button — base ─────────────────────────────── -->
     <Style Selector="Button">
-        <Setter Property="Background"       Value="{DynamicResource NebulaSurface2Brush}"/>
         <Setter Property="Foreground"       Value="{DynamicResource NebulaTextBrush}"/>
         <Setter Property="BorderBrush"      Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="BorderThickness"  Value="1"/>
@@ -120,6 +119,10 @@
         <Setter Property="FontSize"         Value="13"/>
         <Setter Property="Cursor"           Value="Hand"/>
     </Style>
+    <!-- Use ContentPresenter selector so our color beats FluentTheme's ButtonBackground resource -->
+    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaSurface2Brush}"/>
+    </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource NebulaSurface3Brush}"/>
     </Style>
@@ -127,11 +130,16 @@
         <Setter Property="Background" Value="{DynamicResource NebulaSurfaceBrush}"/>
     </Style>
 
-    <!-- ── Button.accent — filled purple ─────────────── -->
+    <!-- ── Button.accent — filled accent-color ──────── -->
     <Style Selector="Button.accent">
-        <Setter Property="Background"      Value="{DynamicResource NebulaAccentBrush}"/>
         <Setter Property="Foreground"      Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <!-- Target ContentPresenter directly so we beat FluentTheme's template-level accent override -->
+    <Style Selector="Button.accent /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
     <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource NebulaAccentHoverBrush}"/>
