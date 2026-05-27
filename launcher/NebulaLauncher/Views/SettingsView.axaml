@@ -167,9 +167,20 @@
         </ScrollViewer>
 
         <!-- ── Themes tab ──────────────────────────────────── -->
-        <views:ThemesView Grid.Row="1"
-                          IsVisible="{Binding IsThemesActive}"
-                          DataContext="{Binding Themes}"/>
+        <!--
+            Use ContentControl so IsVisible binds to SettingsViewModel (this DataContext),
+            not to ThemesViewModel. Setting DataContext on the ThemesView directly would
+            lose the SettingsViewModel scope before IsVisible resolves.
+        -->
+        <ContentControl Grid.Row="1"
+                        IsVisible="{Binding IsThemesActive}"
+                        Content="{Binding Themes}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate DataType="vm:ThemesViewModel">
+                    <views:ThemesView/>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
 
     </Grid>
 
