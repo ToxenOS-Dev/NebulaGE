@@ -65,6 +65,11 @@
         <SolidColorBrush x:Key="NebulaHoverOverlayBrush"   Color="#0DFFFFFF"/>
         <SolidColorBrush x:Key="NebulaPressOverlayBrush"   Color="#07FFFFFF"/>
 
+        <!-- Brushes — glass / depth (semi-transparent, show layers beneath) -->
+        <SolidColorBrush x:Key="NebulaGlassSurfaceBrush"  Color="#D916161A"/>
+        <SolidColorBrush x:Key="NebulaGlassBgBrush"       Color="#CC0F0F11"/>
+        <SolidColorBrush x:Key="NebulaGlassCardBrush"     Color="#CC1C1C21"/>
+
     </Styles.Resources>
 
     <!-- ── Window ─────────────────────────────────────── -->

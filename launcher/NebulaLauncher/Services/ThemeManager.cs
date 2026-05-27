@@ -46,6 +46,11 @@ public static class ThemeManager
         var errorBorder  = ThemePreset.WithAlpha(error, 64);
         var errorText    = Lighten(error, 0.25f);
 
+        // Glass surfaces — semi-transparent for layered depth
+        var glassSurface  = ThemePreset.WithAlpha(surface, 217);  // surface @ 85% — toolbars, tab bars
+        var glassBg       = ThemePreset.WithAlpha(bg, 204);        // bg @ 80%  — deep panel backgrounds
+        var glassCard     = ThemePreset.WithAlpha(surface2, 204);  // surface2 @ 80% — floating cards
+
         // Hover/press overlays — invert for light themes
         bool isLight = ThemePreset.Luminance(bg) > 0.5;
         var hoverOverlay = isLight
@@ -101,8 +106,13 @@ public static class ThemeManager
         SetBrush(res, "NebulaErrorSurfaceBrush",   errorSurface);
         SetBrush(res, "NebulaErrorBorderBrush",    errorBorder);
         SetBrush(res, "NebulaErrorTextBrush",      errorText);
-        SetBrush(res, "NebulaHoverOverlayBrush",   hoverOverlay);
+        SetBrush(res, "NebulaHoverOverlayBrush",    hoverOverlay);
         SetBrush(res, "NebulaPressOverlayBrush",   pressOverlay);
+
+        // Glass / depth surfaces
+        SetBrush(res, "NebulaGlassSurfaceBrush",   glassSurface);
+        SetBrush(res, "NebulaGlassBgBrush",        glassBg);
+        SetBrush(res, "NebulaGlassCardBrush",      glassCard);
     }
 
     // ── Helpers ──────────────────────────────────────────────────

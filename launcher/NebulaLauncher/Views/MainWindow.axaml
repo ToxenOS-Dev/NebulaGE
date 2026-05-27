@@ -6,133 +6,207 @@
         x:DataType="vm:MainWindowViewModel"
         Title="NebulaGE"
         Width="1060" Height="700"
-        MinWidth="820" MinHeight="560">
+        MinWidth="820" MinHeight="560"
+        TransparencyLevelHint="AcrylicBlur,Blur,Transparent"
+        Background="Transparent">
 
-    <Grid ColumnDefinitions="200,*">
+    <!--
+        Layer stack (bottom → top):
+          0  Solid NebulaBg — always-on floor so the window is never naked
+          1  Ambient blob canvas — large blurred ellipses create soft glow puddles
+          2  Main UI grid — sidebar is acrylic (blurs layers 0+1), content is transparent
+    -->
+    <Panel>
 
-        <!-- ── Sidebar ──────────────────────────────────────── -->
-        <Border Grid.Column="0"
-                Background="{DynamicResource NebulaSurfaceBrush}"
-                BorderBrush="{DynamicResource NebulaBorderBrush}"
-                BorderThickness="0,0,1,0">
-            <DockPanel>
+        <!-- ── 0: Solid background floor ────────────────────── -->
+        <Border Background="{DynamicResource NebulaBgBrush}"/>
 
-                <!-- Brand -->
-                <Border DockPanel.Dock="Top"
-                        Padding="16,20,16,16"
-                        BorderBrush="{DynamicResource NebulaBorderBrush}"
-                        BorderThickness="0,0,0,1">
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="NebulaGE"
-                                   FontSize="17"
-                                   FontWeight="SemiBold"/>
-                        <TextBlock Text="v0.1.0"
-                                   FontSize="11"
-                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
-                    </StackPanel>
+        <!-- ── 1: Ambient glow blobs ─────────────────────────
+             Canvas stretches to fill the Panel inside a Grid.
+             Children positioned with absolute Canvas.Left/Top.
+             BlurEffect with large radius dissolves hard edges into
+             a soft, cloud-like ambient glow.
+        ─────────────────────────────────────────────────────── -->
+        <Grid IsHitTestVisible="False">
+            <Canvas>
+                <!-- Primary blob — bottom-left corner -->
+                <Ellipse Canvas.Left="-160" Canvas.Top="320"
+                         Width="680" Height="680"
+                         Fill="{DynamicResource NebulaAccentBrush}"
+                         Opacity="0.11">
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="100"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+
+                <!-- Secondary blob — upper-right corner -->
+                <Ellipse Canvas.Left="780" Canvas.Top="-160"
+                         Width="460" Height="460"
+                         Fill="{DynamicResource NebulaAccentBrush}"
+                         Opacity="0.06">
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="80"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+
+                <!-- Tiny accent spark — center-right, adds depth -->
+                <Ellipse Canvas.Left="860" Canvas.Top="380"
+                         Width="220" Height="220"
+                         Fill="{DynamicResource NebulaAccentBrush}"
+                         Opacity="0.05">
+                    <Ellipse.Effect>
+                        <BlurEffect Radius="50"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+            </Canvas>
+        </Grid>
+
+        <!-- ── 2: Main UI ────────────────────────────────────── -->
+        <Grid ColumnDefinitions="200,*">
+
+            <!-- ── Sidebar — acrylic frosted glass ────────────
+                 ExperimentalAcrylicBorder blurs everything behind it
+                 (the blobs on layer 1, plus any content behind the window
+                 if the compositor supports it).
+                 Falls back gracefully to solid TintColor on unsupported systems.
+            ───────────────────────────────────────────────────── -->
+            <Panel Grid.Column="0">
+                <ExperimentalAcrylicBorder>
+                    <ExperimentalAcrylicBorder.Material>
+                        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                                      TintColor="{DynamicResource NebulaSurface}"
+                                                      TintOpacity="0.82"
+                                                      MaterialOpacity="0.92"/>
+                    </ExperimentalAcrylicBorder.Material>
+                    <!-- Stretch filler so acrylic covers the full sidebar -->
+                    <Panel/>
+                </ExperimentalAcrylicBorder>
+
+                <!-- Nav content + right separator line -->
+                <Border BorderBrush="{DynamicResource NebulaBorderBrush}"
+                        BorderThickness="0,0,1,0">
+                    <DockPanel>
+
+                        <!-- Brand -->
+                        <Border DockPanel.Dock="Top"
+                                Padding="16,20,16,16"
+                                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="NebulaGE"
+                                           FontSize="17"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="v0.1.0"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Settings pinned to bottom -->
+                        <Border DockPanel.Dock="Bottom"
+                                Padding="8"
+                                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                                BorderThickness="0,1,0,0">
+                            <Button Classes="ghost"
+                                    Classes.active="{Binding IsSettingsSelected}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="8,7"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="{x:Static vm:NavItem.Settings}">
+                                <StackPanel Orientation="Horizontal" Spacing="9">
+                                    <TextBlock Text="⚙"
+                                               Classes="nav-icon"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="Settings"
+                                               Classes="nav-label"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Border>
+
+                        <!-- Nav items -->
+                        <StackPanel DockPanel.Dock="Top"
+                                    Spacing="2"
+                                    Margin="8,12,8,0">
+
+                            <Button Classes="ghost"
+                                    Classes.active="{Binding IsProjectsSelected}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="8,7"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="{x:Static vm:NavItem.Projects}">
+                                <StackPanel Orientation="Horizontal" Spacing="9">
+                                    <TextBlock Text="⬡"
+                                               Classes="nav-icon"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="Projects"
+                                               Classes="nav-label"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Classes="ghost"
+                                    Classes.active="{Binding IsEnginesSelected}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="8,7"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="{x:Static vm:NavItem.Engines}">
+                                <StackPanel Orientation="Horizontal" Spacing="9">
+                                    <TextBlock Text="◈"
+                                               Classes="nav-icon"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="Engine Versions"
+                                               Classes="nav-label"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                        </StackPanel>
+
+                    </DockPanel>
                 </Border>
+            </Panel>
 
-                <!-- Settings pinned to bottom -->
-                <Border DockPanel.Dock="Bottom"
-                        Padding="8"
-                        BorderBrush="{DynamicResource NebulaBorderBrush}"
-                        BorderThickness="0,1,0,0">
-                    <Button Classes="ghost"
-                            Classes.active="{Binding IsSettingsSelected}"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="8,7"
-                            Command="{Binding NavigateCommand}"
-                            CommandParameter="{x:Static vm:NavItem.Settings}">
-                        <StackPanel Orientation="Horizontal" Spacing="9">
-                            <TextBlock Text="⚙"
-                                       Classes="nav-icon"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="Settings"
-                                       Classes="nav-label"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                </Border>
+            <!-- ── Content area — transparent so blobs glow through ── -->
+            <ContentControl Grid.Column="1"
+                            Content="{Binding CurrentPage}">
+                <ContentControl.DataTemplates>
 
-                <!-- Nav items -->
-                <StackPanel DockPanel.Dock="Top"
-                            Spacing="2"
-                            Margin="8,12,8,0">
+                    <DataTemplate DataType="vm:ProjectHubViewModel">
+                        <views:ProjectHubView/>
+                    </DataTemplate>
 
-                    <Button Classes="ghost"
-                            Classes.active="{Binding IsProjectsSelected}"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="8,7"
-                            Command="{Binding NavigateCommand}"
-                            CommandParameter="{x:Static vm:NavItem.Projects}">
-                        <StackPanel Orientation="Horizontal" Spacing="9">
-                            <TextBlock Text="⬡"
-                                       Classes="nav-icon"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="Projects"
-                                       Classes="nav-label"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <DataTemplate DataType="vm:SettingsViewModel">
+                        <views:SettingsView/>
+                    </DataTemplate>
 
-                    <Button Classes="ghost"
-                            Classes.active="{Binding IsEnginesSelected}"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Padding="8,7"
-                            Command="{Binding NavigateCommand}"
-                            CommandParameter="{x:Static vm:NavItem.Engines}">
-                        <StackPanel Orientation="Horizontal" Spacing="9">
-                            <TextBlock Text="◈"
-                                       Classes="nav-icon"
-                                       FontSize="13"
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="Engine Versions"
-                                       Classes="nav-label"
-                                       VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <DataTemplate DataType="vm:StubPageViewModel">
+                        <Grid>
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="8">
+                                <TextBlock Text="{Binding Title}"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding Message}"
+                                           Foreground="{DynamicResource NebulaTextMutedBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
 
-                </StackPanel>
+                </ContentControl.DataTemplates>
+            </ContentControl>
 
-            </DockPanel>
-        </Border>
+        </Grid>
 
-        <!-- ── Content area ─────────────────────────────────── -->
-        <ContentControl Grid.Column="1"
-                        Content="{Binding CurrentPage}">
-            <ContentControl.DataTemplates>
+    </Panel>
 
-                <DataTemplate DataType="vm:ProjectHubViewModel">
-                    <views:ProjectHubView/>
-                </DataTemplate>
-
-                <DataTemplate DataType="vm:SettingsViewModel">
-                    <views:SettingsView/>
-                </DataTemplate>
-
-                <DataTemplate DataType="vm:StubPageViewModel">
-                    <Grid>
-                        <StackPanel HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Spacing="8">
-                            <TextBlock Text="{Binding Title}"
-                                       FontSize="18"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding Message}"
-                                       Foreground="{DynamicResource NebulaTextMutedBrush}"
-                                       HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-
-            </ContentControl.DataTemplates>
-        </ContentControl>
-
-    </Grid>
 </Window>

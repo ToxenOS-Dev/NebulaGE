@@ -7,8 +7,9 @@
 
     <Grid RowDefinitions="Auto,*">
 
-        <!-- ── Tab bar ─────────────────────────────────────── -->
+        <!-- ── Tab bar — glass surface ────────────────────── -->
         <Border Grid.Row="0"
+                Background="{DynamicResource NebulaGlassSurfaceBrush}"
                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="20,12,20,0">
