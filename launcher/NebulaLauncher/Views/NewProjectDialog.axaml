@@ -4,47 +4,40 @@
         x:Class="NebulaLauncher.Views.NewProjectDialog"
         x:DataType="vm:NewProjectDialogViewModel"
         Title="New Project"
-        Width="480" Height="400"
+        Width="480"
+        SizeToContent="Height"
+        MinHeight="300"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="#0F0F11"
         FontFamily="Inter,Segoe UI,system-ui,sans-serif"
         FontSize="13">
 
-    <DockPanel Margin="24,20,24,24">
+    <!--
+        Grid rows:
+          0 — Title       (Auto)
+          1 — Form        (Auto — content drives height, SizeToContent handles window)
+          2 — Separator   (Auto)
+          3 — Buttons     (Auto — always pinned at bottom)
+    -->
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+          Margin="24,20,24,24">
 
-        <!-- ── Title ─────────────────────────────────────────── -->
-        <TextBlock DockPanel.Dock="Top"
+        <!-- ── Title ─────────────────────────────────────── -->
+        <TextBlock Grid.Row="0"
                    Text="New Project"
                    FontSize="16"
                    FontWeight="SemiBold"
                    Foreground="#E2E2E8"
-                   Margin="0,0,0,22"/>
+                   Margin="0,0,0,20"/>
 
-        <!-- ── Buttons ───────────────────────────────────────── -->
-        <StackPanel DockPanel.Dock="Bottom"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="8"
-                    Margin="0,16,0,0">
-            <Button Content="Cancel"
-                    MinWidth="80"
-                    Click="OnCancel"/>
-            <Button Classes="accent"
-                    Content="+ Create Project"
-                    MinWidth="128"
-                    IsEnabled="{Binding CanCreate}"
-                    Click="OnCreate"/>
-        </StackPanel>
-
-        <!-- ── Form ──────────────────────────────────────────── -->
-        <StackPanel DockPanel.Dock="Top" Spacing="16">
+        <!-- ── Form ──────────────────────────────────────── -->
+        <StackPanel Grid.Row="1" Spacing="16">
 
             <!-- Project Name -->
             <StackPanel Spacing="6">
                 <TextBlock Text="Project Name"
-                           FontSize="11"
-                           FontWeight="Medium"
+                           FontSize="11" FontWeight="Medium"
                            Foreground="#8888A0"/>
                 <TextBox Text="{Binding ProjectName}"
                          Watermark="MyGame"
@@ -54,8 +47,7 @@
             <!-- Location -->
             <StackPanel Spacing="6">
                 <TextBlock Text="Location"
-                           FontSize="11"
-                           FontWeight="Medium"
+                           FontSize="11" FontWeight="Medium"
                            Foreground="#8888A0"/>
                 <Grid ColumnDefinitions="*,8,Auto">
                     <TextBox Grid.Column="0" Text="{Binding Location}"/>
@@ -67,8 +59,7 @@
             <!-- Template cards -->
             <StackPanel Spacing="6">
                 <TextBlock Text="Template"
-                           FontSize="11"
-                           FontWeight="Medium"
+                           FontSize="11" FontWeight="Medium"
                            Foreground="#8888A0"/>
                 <ItemsControl ItemsSource="{Binding TemplateCards}">
                     <ItemsControl.ItemsPanel>
@@ -86,11 +77,9 @@
                                     Padding="12,10">
                                 <StackPanel Spacing="3">
                                     <TextBlock Text="{Binding Label}"
-                                               FontSize="12"
-                                               FontWeight="Medium"/>
+                                               FontSize="12" FontWeight="Medium"/>
                                     <TextBlock Text="{Binding Description}"
-                                               FontSize="10"
-                                               Foreground="#8888A0"
+                                               FontSize="10" Foreground="#8888A0"
                                                TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
@@ -107,17 +96,35 @@
                     Padding="12,9">
                 <StackPanel Spacing="3">
                     <TextBlock Text="Will be created at"
-                               FontSize="10"
-                               Foreground="#44445A"/>
+                               FontSize="10" Foreground="#44445A"/>
                     <TextBlock Text="{Binding FullPath}"
-                               FontSize="12"
-                               Foreground="#8888A0"
+                               FontSize="12" Foreground="#8888A0"
                                TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
 
         </StackPanel>
 
-    </DockPanel>
+        <!-- ── Divider ────────────────────────────────────── -->
+        <Border Grid.Row="2"
+                Height="1"
+                Background="#2A2A30"
+                Margin="0,20,0,0"/>
+
+        <!-- ── Buttons — always at bottom ────────────────── -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,12,0,0">
+            <Button Content="Cancel" MinWidth="80" Click="OnCancel"/>
+            <Button Classes="accent"
+                    Content="+ Create Project"
+                    MinWidth="128"
+                    IsEnabled="{Binding CanCreate}"
+                    Click="OnCreate"/>
+        </StackPanel>
+
+    </Grid>
 
 </Window>
