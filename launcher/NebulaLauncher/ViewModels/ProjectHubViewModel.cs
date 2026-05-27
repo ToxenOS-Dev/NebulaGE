@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,11 +18,11 @@ public partial class ProjectItemViewModel : ViewModelBase
     private readonly Action<ProjectItemViewModel> _onOpen;
     private readonly Action<ProjectItemViewModel> _onRemove;
 
-    public string  Name             => Project.Name;
-    public string  Path             => Project.Path;
-    public string  EngineVersion    => $"v{Project.EngineVersion}";
-    public bool    HasGitRepo       => Project.HasGitRepo;
-    public string? GitBranch        => Project.GitBranch;
+    public string  Name              => Project.Name;
+    public string  Path              => Project.Path;
+    public string  EngineVersion     => $"v{Project.EngineVersion}";
+    public bool    HasGitRepo        => Project.HasGitRepo;
+    public string? GitBranch         => Project.GitBranch;
     public string  LastOpenedDisplay => FormatDate(Project.LastOpened);
 
     public ProjectItemViewModel(
@@ -34,21 +35,58 @@ public partial class ProjectItemViewModel : ViewModelBase
         _onRemove = onRemove;
     }
 
+    // ── Commands ──────────────────────────────────────────────
+
     [RelayCommand]
-    private void Open()   => _onOpen(this);
+    private void Open() => _onOpen(this);
 
     [RelayCommand]
     private void Remove() => _onRemove(this);
 
+    [RelayCommand]
+    private void OpenInIde()
+    {
+        var settings = SettingsService.Load();
+        if (settings.PreferredIdePath is null) return;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName        = settings.PreferredIdePath,
+                Arguments       = $"\"{Project.Path}\"",
+                UseShellExecute = false,
+            });
+        }
+        catch { /* IDE not found or failed to launch — TODO: surface error */ }
+    }
+
+    [RelayCommand]
+    private void ShowInFiles()
+    {
+        try
+        {
+            // xdg-open opens the folder in whatever file manager the DE uses
+            Process.Start(new ProcessStartInfo
+            {
+                FileName        = "xdg-open",
+                Arguments       = $"\"{Project.Path}\"",
+                UseShellExecute = false,
+            });
+        }
+        catch { /* xdg-open unavailable */ }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────
+
     private static string FormatDate(DateTime dt)
     {
-        var now = DateTime.UtcNow;
-        var diff = now - dt;
+        var diff = DateTime.UtcNow - dt;
 
-        return diff.TotalMinutes < 1   ? "Just now"
-             : diff.TotalHours   < 1   ? $"{(int)diff.TotalMinutes}m ago"
-             : diff.TotalDays    < 1   ? $"{(int)diff.TotalHours}h ago"
-             : diff.TotalDays    < 30  ? $"{(int)diff.TotalDays}d ago"
+        return diff.TotalMinutes < 1  ? "Just now"
+             : diff.TotalHours   < 1  ? $"{(int)diff.TotalMinutes}m ago"
+             : diff.TotalDays    < 1  ? $"{(int)diff.TotalHours}h ago"
+             : diff.TotalDays    < 30 ? $"{(int)diff.TotalDays}d ago"
              : dt.ToString("MMM d, yyyy");
     }
 }
@@ -68,8 +106,13 @@ public partial class ProjectHubViewModel : ViewModelBase
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    private string? _errorMessage;
+
     public bool HasProjects => Projects.Count > 0;
     public bool IsEmpty     => Projects.Count == 0;
+    public bool HasError    => !string.IsNullOrEmpty(ErrorMessage);
 
     public ProjectHubViewModel()
     {
@@ -82,13 +125,13 @@ public partial class ProjectHubViewModel : ViewModelBase
     /// <summary>Called by the view after NewProjectDialog closes with a project.</summary>
     public void AddProject(NebulaProject project)
     {
-        // Avoid duplicates (e.g. user created the same path twice)
+        ErrorMessage = null;
+
         var existing = Projects.FirstOrDefault(p => p.Project.Path == project.Path);
         if (existing is not null)
             Projects.Remove(existing);
 
-        var item = new ProjectItemViewModel(project, HandleOpen, HandleRemove);
-        Projects.Insert(0, item);
+        Projects.Insert(0, new ProjectItemViewModel(project, HandleOpen, HandleRemove));
         NotifyListChanged();
     }
 
@@ -96,27 +139,33 @@ public partial class ProjectHubViewModel : ViewModelBase
     public void OpenFromPath(string path)
     {
         var project = _service.Open(path);
-        if (project is null) return; // not a valid nebula project — TODO: show inline error
+
+        if (project is null)
+        {
+            ErrorMessage = $"No NebulaGE project found in: {path}";
+            return;
+        }
 
         AddProject(project);
     }
+
+    // ── Commands ──────────────────────────────────────────────
+
+    [RelayCommand]
+    private void DismissError() => ErrorMessage = null;
 
     // ── Internals ─────────────────────────────────────────────
 
     private void ReloadProjects()
     {
-        var items = _registry.Projects
-            .Select(p => new ProjectItemViewModel(p, HandleOpen, HandleRemove));
-
-        Projects = new ObservableCollection<ProjectItemViewModel>(items);
+        Projects = new ObservableCollection<ProjectItemViewModel>(
+            _registry.Projects.Select(p => new ProjectItemViewModel(p, HandleOpen, HandleRemove)));
     }
 
     private void HandleOpen(ProjectItemViewModel item)
     {
-        // Update last-opened timestamp in registry
         item.Project.LastOpened = DateTime.UtcNow;
         _registry.AddOrUpdate(item.Project);
-
         // TODO: launch editor for item.Project
     }
 
