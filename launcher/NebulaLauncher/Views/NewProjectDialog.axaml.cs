@@ -20,17 +20,6 @@ public partial class NewProjectDialog : Window
         Opened += (_, _) => NameInput.Focus();
     }
 
-    // ── Template selection ────────────────────────────────────
-
-    private void OnSelectTemplate(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button { Tag: TemplateOption option } &&
-            DataContext is NewProjectDialogViewModel vm)
-        {
-            vm.SelectedTemplate = option;
-        }
-    }
-
     // ── Location browse ───────────────────────────────────────
 
     private async void OnBrowseLocation(object? sender, RoutedEventArgs e)

@@ -4,7 +4,7 @@
         x:Class="NebulaLauncher.Views.NewProjectDialog"
         x:DataType="vm:NewProjectDialogViewModel"
         Title="New Project"
-        Width="480" Height="390"
+        Width="480" Height="400"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="#0F0F11"
@@ -25,7 +25,8 @@
         <StackPanel DockPanel.Dock="Bottom"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
-                    Spacing="8">
+                    Spacing="8"
+                    Margin="0,16,0,0">
             <Button Content="Cancel"
                     MinWidth="80"
                     Click="OnCancel"/>
@@ -37,7 +38,7 @@
         </StackPanel>
 
         <!-- ── Form ──────────────────────────────────────────── -->
-        <StackPanel DockPanel.Dock="Top" Spacing="18">
+        <StackPanel DockPanel.Dock="Top" Spacing="16">
 
             <!-- Project Name -->
             <StackPanel Spacing="6">
@@ -57,44 +58,40 @@
                            FontWeight="Medium"
                            Foreground="#8888A0"/>
                 <Grid ColumnDefinitions="*,8,Auto">
-                    <TextBox Grid.Column="0"
-                             Text="{Binding Location}"/>
-                    <Button Grid.Column="2"
-                            Content="Browse"
-                            MinWidth="72"
+                    <TextBox Grid.Column="0" Text="{Binding Location}"/>
+                    <Button Grid.Column="2" Content="Browse" MinWidth="72"
                             Click="OnBrowseLocation"/>
                 </Grid>
             </StackPanel>
 
-            <!-- Template -->
+            <!-- Template cards -->
             <StackPanel Spacing="6">
                 <TextBlock Text="Template"
                            FontSize="11"
                            FontWeight="Medium"
                            Foreground="#8888A0"/>
-                <ItemsControl ItemsSource="{x:Static vm:NewProjectDialogViewModel.AvailableTemplates}">
+                <ItemsControl ItemsSource="{Binding TemplateCards}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="8"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="vm:TemplateOption">
-                            <Button Classes="ghost"
-                                    Padding="12,8"
-                                    CornerRadius="4"
-                                    IsEnabled="{Binding Id,
-                                        Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                    Click="OnSelectTemplate"
-                                    Tag="{Binding}">
-                                <StackPanel Spacing="2">
+                        <DataTemplate DataType="vm:TemplateCardViewModel">
+                            <Button Classes="template-card"
+                                    Classes.selected="{Binding IsSelected}"
+                                    IsEnabled="{Binding IsAvailable}"
+                                    Command="{Binding SelectCommand}"
+                                    MinWidth="120"
+                                    Padding="12,10">
+                                <StackPanel Spacing="3">
                                     <TextBlock Text="{Binding Label}"
                                                FontSize="12"
-                                               FontWeight="Medium"
-                                               Foreground="#E2E2E8"/>
+                                               FontWeight="Medium"/>
                                     <TextBlock Text="{Binding Description}"
                                                FontSize="10"
-                                               Foreground="#44445A"/>
+                                               Foreground="#8888A0"
+                                               TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
                         </DataTemplate>
@@ -104,6 +101,8 @@
 
             <!-- Path preview -->
             <Border Background="#16161A"
+                    BorderBrush="#2A2A30"
+                    BorderThickness="1"
                     CornerRadius="4"
                     Padding="12,9">
                 <StackPanel Spacing="3">

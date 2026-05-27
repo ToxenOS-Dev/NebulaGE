@@ -117,6 +117,34 @@
         <Setter Property="Background" Value="{StaticResource NebulaAccentPressed}"/>
     </Style>
 
+    <!-- ── Button.template-card — selectable option card ─ -->
+    <Style Selector="Button.template-card">
+        <Setter Property="Background"      Value="{StaticResource NebulaSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="5"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    </Style>
+    <Style Selector="Button.template-card:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaSurface2Brush}"/>
+    </Style>
+    <!-- Selected state: accent border + tinted background -->
+    <Style Selector="Button.template-card.selected">
+        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.template-card.selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+    </Style>
+    <Style Selector="Button.template-card.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#8B6FD425"/>
+    </Style>
+    <!-- Disabled (coming soon) -->
+    <Style Selector="Button.template-card:disabled">
+        <Setter Property="Opacity" Value="0.4"/>
+        <Setter Property="Cursor"  Value="Arrow"/>
+    </Style>
+
     <!-- ── Button.ghost — transparent background ─────── -->
     <Style Selector="Button.ghost">
         <Setter Property="Background"      Value="Transparent"/>
