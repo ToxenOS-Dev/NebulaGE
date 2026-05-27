@@ -19,4 +19,17 @@ public class LauncherSettings
     /// <summary>Default parent directory for new projects.</summary>
     [JsonPropertyName("defaultProjectLocation")]
     public string? DefaultProjectLocation { get; set; }
+
+    // ── Visual effects (all OFF by default) ──────────────────────
+    /// <summary>Ambient glow blobs in the window background.</summary>
+    [JsonPropertyName("ambientGlowEnabled")]
+    public bool AmbientGlowEnabled { get; set; } = false;
+
+    /// <summary>Acrylic/blur behind the sidebar.</summary>
+    [JsonPropertyName("sidebarBlurEnabled")]
+    public bool SidebarBlurEnabled { get; set; } = false;
+
+    /// <summary>Glass/frosted surfaces on toolbar and cards.</summary>
+    [JsonPropertyName("glassSurfacesEnabled")]
+    public bool GlassSurfacesEnabled { get; set; } = false;
 }

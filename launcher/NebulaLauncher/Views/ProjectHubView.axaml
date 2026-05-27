@@ -6,28 +6,56 @@
 
     <DockPanel>
 
-        <!-- ── Toolbar — frosted glass surface ──────────────── -->
+        <!-- ── Toolbar ──────────────────────────────────────────
+             Background comes from NebulaToolbarBrush — solid when
+             GlassSurfacesEnabled=false, semi-transparent when true.
+        ─────────────────────────────────────────────────────────── -->
         <Border DockPanel.Dock="Top"
-                Padding="20,14"
-                Background="{DynamicResource NebulaGlassSurfaceBrush}"
+                Padding="18,10"
+                Background="{DynamicResource NebulaToolbarBrush}"
                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                 BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="*,Auto">
+            <Grid ColumnDefinitions="*,12,Auto">
 
-                <TextBox Grid.Column="0"
-                         Watermark="Search projects..."
-                         Text="{Binding SearchText}"
-                         MaxWidth="320"
-                         HorizontalAlignment="Left"/>
+                <!-- Search box with icon prefix -->
+                <Border Grid.Column="0"
+                        Classes="search-box"
+                        MaxWidth="380"
+                        HorizontalAlignment="Left">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0"
+                                   Text="⌕"
+                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                   Margin="10,0,4,0"
+                                   FontSize="15"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"
+                                 Classes="borderless"
+                                 Watermark="Search projects..."
+                                 Text="{Binding SearchText}"
+                                 VerticalAlignment="Center"
+                                 VerticalContentAlignment="Center"/>
+                    </Grid>
+                </Border>
 
-                <StackPanel Grid.Column="1"
+                <!-- Action buttons -->
+                <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             Spacing="8">
-                    <Button Classes="accent" Click="OnNewProject">
-                        + New Project
+                    <Button Classes="accent" Click="OnNewProject"
+                            Padding="12,6">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="+" FontSize="15" FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="New Project" VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Button>
-                    <Button Click="OnOpenFromDisk">
-                        Open Folder
+                    <Button Click="OnOpenFromDisk" Padding="10,6">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="▤" FontSize="12" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                            <TextBlock Text="Open Folder" VerticalAlignment="Center"/>
+                        </StackPanel>
                     </Button>
                 </StackPanel>
 
@@ -42,48 +70,84 @@
                 BorderThickness="0,0,0,1"
                 Padding="20,0">
             <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="40">
-
                 <TextBlock Grid.Column="0"
                            Text="⚠"
                            Foreground="{DynamicResource NebulaErrorBrush}"
                            VerticalAlignment="Center"
                            Margin="0,0,10,0"/>
-
                 <TextBlock Grid.Column="1"
                            Text="{Binding ErrorMessage}"
                            Foreground="{DynamicResource NebulaErrorTextBrush}"
                            FontSize="12"
                            VerticalAlignment="Center"
                            TextWrapping="Wrap"/>
-
                 <Button Grid.Column="2"
                         Classes="ghost"
                         Foreground="{DynamicResource NebulaErrorBrush}"
                         Padding="8,4"
                         VerticalAlignment="Center"
-                        Command="{Binding DismissErrorCommand}">
-                    ✕
-                </Button>
-
+                        Command="{Binding DismissErrorCommand}">✕</Button>
             </Grid>
         </Border>
 
-        <!-- ── Section label ────────────────────────────────── -->
-        <Border DockPanel.Dock="Top" Padding="20,12,20,6">
-            <TextBlock Text="RECENT PROJECTS"
-                       FontSize="10"
-                       FontWeight="Medium"
-                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
-                       LetterSpacing="1.2"/>
+        <!-- ── Section header — Recent Projects + view toggle ── -->
+        <Border DockPanel.Dock="Top"
+                Padding="20,10,16,10"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Recent Projects"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+
+                <!-- View mode toggle -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="2">
+                    <!-- Grid view -->
+                    <Button Classes="view-toggle"
+                            Classes.active="{Binding IsGridView}"
+                            Command="{Binding SetGridViewCommand}"
+                            ToolTip.Tip="Grid view">
+                        <Grid Width="14" Height="14"
+                              ColumnDefinitions="5,2,5" RowDefinitions="5,2,5">
+                            <Border Grid.Row="0" Grid.Column="0" CornerRadius="1.5"
+                                    Classes="nav-icon-box"/>
+                            <Border Grid.Row="0" Grid.Column="2" CornerRadius="1.5"
+                                    Classes="nav-icon-box"/>
+                            <Border Grid.Row="2" Grid.Column="0" CornerRadius="1.5"
+                                    Classes="nav-icon-box"/>
+                            <Border Grid.Row="2" Grid.Column="2" CornerRadius="1.5"
+                                    Classes="nav-icon-box"/>
+                        </Grid>
+                    </Button>
+                    <!-- List view -->
+                    <Button Classes="view-toggle"
+                            Classes.active="{Binding !IsGridView}"
+                            Command="{Binding SetListViewCommand}"
+                            ToolTip.Tip="List view">
+                        <StackPanel Spacing="2.5" VerticalAlignment="Center">
+                            <Border Height="2" Width="14" CornerRadius="1"
+                                    Classes="nav-icon-box"/>
+                            <Border Height="2" Width="14" CornerRadius="1"
+                                    Classes="nav-icon-box"/>
+                            <Border Height="2" Width="14" CornerRadius="1"
+                                    Classes="nav-icon-box"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <!-- ── Project list / empty state ───────────────────── -->
         <Panel DockPanel.Dock="Top">
 
-            <!-- List -->
+            <!-- List view -->
             <ScrollViewer IsVisible="{Binding HasProjects}">
-                <ItemsControl ItemsSource="{Binding Projects}"
-                              Margin="12,0,12,16">
+                <ItemsControl ItemsSource="{Binding FilteredProjects}"
+                              Margin="16,12,16,16">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Spacing="2"/>
@@ -91,120 +155,121 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="vm:ProjectItemViewModel">
-                            <!--
-                                Glass card: semi-transparent surface so the ambient
-                                glow blobs show softly through the gap between cards.
-                                A subtle top-edge highlight adds the frosted glass sheen.
-                            -->
-                            <Border Background="{DynamicResource NebulaGlassCardBrush}"
-                                    BorderBrush="{DynamicResource NebulaBorderBrush}"
-                                    BorderThickness="1"
+                            <Button Classes="ghost"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="14,11"
                                     CornerRadius="6"
-                                    Margin="0,0,0,0">
+                                    Command="{Binding OpenCommand}">
 
-                                <!-- Top-edge glass highlight line -->
-                                <Border.BorderBrush>
-                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                        <GradientStop Color="{DynamicResource NebulaBorder}"  Offset="0"/>
-                                        <GradientStop Color="{DynamicResource NebulaBorderSubtle}" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.BorderBrush>
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open"
+                                                  Command="{Binding OpenCommand}"/>
+                                        <MenuItem Header="Open in IDE"
+                                                  Command="{Binding OpenInIdeCommand}"/>
+                                        <Separator/>
+                                        <MenuItem Header="Show in Files"
+                                                  Command="{Binding ShowInFilesCommand}"/>
+                                        <Separator/>
+                                        <MenuItem Header="Remove from List"
+                                                  Command="{Binding RemoveCommand}"/>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
 
-                                <Button Classes="ghost"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Stretch"
-                                        Padding="12,10"
-                                        CornerRadius="5"
-                                        Command="{Binding OpenCommand}">
+                                <Grid ColumnDefinitions="*,Auto">
 
-                                    <!-- ── Context menu ──────────── -->
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Open"
-                                                      Command="{Binding OpenCommand}"/>
-                                            <MenuItem Header="Open in IDE"
-                                                      Command="{Binding OpenInIdeCommand}"/>
-                                            <Separator/>
-                                            <MenuItem Header="Show in Files"
-                                                      Command="{Binding ShowInFilesCommand}"/>
-                                            <Separator/>
-                                            <MenuItem Header="Remove from List"
-                                                      Command="{Binding RemoveCommand}"/>
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
+                                    <StackPanel Grid.Column="0"
+                                                Spacing="2"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding Path}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                                    </StackPanel>
 
-                                    <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                VerticalAlignment="Center">
 
-                                        <!-- Left: name + path -->
-                                        <StackPanel Grid.Column="0"
-                                                    Spacing="2"
-                                                    VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontSize="13"
-                                                       FontWeight="Medium"/>
-                                            <TextBlock Text="{Binding Path}"
+                                        <Border IsVisible="{Binding HasGitRepo}"
+                                                Background="{DynamicResource NebulaAccentSurfaceBrush}"
+                                                CornerRadius="3"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding GitBranch}"
                                                        FontSize="11"
-                                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
-                                        </StackPanel>
+                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                        </Border>
 
-                                        <!-- Right: badges + date -->
-                                        <StackPanel Grid.Column="1"
-                                                    Orientation="Horizontal"
-                                                    Spacing="8"
-                                                    VerticalAlignment="Center">
-
-                                            <Border IsVisible="{Binding HasGitRepo}"
-                                                    Background="{DynamicResource NebulaAccentSurfaceBrush}"
-                                                    CornerRadius="3"
-                                                    Padding="6,2">
-                                                <TextBlock Text="{Binding GitBranch}"
-                                                           FontSize="11"
-                                                           Foreground="{DynamicResource NebulaAccentBrush}"/>
-                                            </Border>
-
-                                            <Border Background="{DynamicResource NebulaSurface2Brush}"
-                                                    CornerRadius="3"
-                                                    Padding="6,2">
-                                                <TextBlock Text="{Binding EngineVersion}"
-                                                           FontSize="11"
-                                                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
-                                            </Border>
-
-                                            <TextBlock Text="{Binding LastOpenedDisplay}"
+                                        <Border Background="{DynamicResource NebulaSurface2Brush}"
+                                                CornerRadius="3"
+                                                Padding="6,2">
+                                            <TextBlock Text="{Binding EngineVersion}"
                                                        FontSize="11"
-                                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
-                                                       VerticalAlignment="Center"
-                                                       MinWidth="70"/>
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Border>
 
-                                        </StackPanel>
-                                    </Grid>
-                                </Button>
-                            </Border>
+                                        <TextBlock Text="{Binding LastOpenedDisplay}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                                   VerticalAlignment="Center"
+                                                   MinWidth="70"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
 
-            <!-- Empty state -->
+            <!-- Empty state — centered folder icon + CTA -->
             <StackPanel IsVisible="{Binding IsEmpty}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Spacing="10"
-                        Margin="0,80">
+                        Spacing="0"
+                        Margin="0,60">
+
+                <!-- Icon in circle -->
+                <Border Width="80" Height="80"
+                        CornerRadius="40"
+                        Background="{DynamicResource NebulaSurface2Brush}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20">
+                    <!-- Folder shape as SVG path -->
+                    <Path HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Stroke="{DynamicResource NebulaTextSubtleBrush}"
+                          StrokeThickness="1.8"
+                          Fill="Transparent"
+                          Data="M 2,7 L 2,24 Q 2,26 4,26 L 26,26 Q 28,26 28,24 L 28,10 Q 28,8 26,8 L 14,8 L 12,4 Q 12,2 10,2 L 4,2 Q 2,2 2,4 Z"/>
+                </Border>
+
                 <TextBlock Text="No projects yet"
-                           FontSize="15"
-                           FontWeight="Medium"
-                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
-                           HorizontalAlignment="Center"/>
+                           FontSize="17"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+
                 <TextBlock Text="Create a new project or open an existing folder to get started."
                            FontSize="13"
-                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
-                           HorizontalAlignment="Center"/>
+                           Foreground="{DynamicResource NebulaTextMutedBrush}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           MaxWidth="340"
+                           Margin="0,0,0,20"/>
+
                 <Button Classes="accent"
                         HorizontalAlignment="Center"
-                        Margin="0,10,0,0"
+                        Padding="16,8"
                         Click="OnNewProject">
-                    + New Project
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="+" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Text="New Project" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
             </StackPanel>
 

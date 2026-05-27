@@ -70,6 +70,14 @@
         <SolidColorBrush x:Key="NebulaGlassBgBrush"       Color="#CC0F0F11"/>
         <SolidColorBrush x:Key="NebulaGlassCardBrush"     Color="#CC1C1C21"/>
 
+        <!-- Toolbar background — swapped by AppearanceViewModel (solid or glass) -->
+        <SolidColorBrush x:Key="NebulaToolbarBrush"       Color="{StaticResource NebulaSurface}"/>
+
+        <!-- Visual-effects flags — false by default, overridden by AppearanceViewModel -->
+        <x:Boolean x:Key="NebulaGlowBlobsEnabled">False</x:Boolean>
+        <x:Boolean x:Key="NebulaSidebarBlurEnabled">False</x:Boolean>
+        <x:Boolean x:Key="NebulaGlassEnabled">False</x:Boolean>
+
     </Styles.Resources>
 
     <!-- ── Window ─────────────────────────────────────── -->
@@ -197,12 +205,113 @@
         <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
-    <!-- Nav icon box (small colored square, replaces emoji) -->
+    <!-- ── Button.template-image — full-bleed image card ───
+         Provides 2-px border (accent when selected), no internal
+         background fill — content is responsible for its own visuals. -->
+    <Style Selector="Button.template-image">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius"    Value="8"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <!-- Suppress Fluent hover/press overlay — the card visuals handle that -->
+    <Style Selector="Button.template-image:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.template-image:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <!-- Selected: accent border -->
+    <Style Selector="Button.template-image.selected">
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+    <!-- Disabled (coming soon): dimmed -->
+    <Style Selector="Button.template-image:disabled">
+        <Setter Property="Opacity" Value="0.45"/>
+        <Setter Property="Cursor"  Value="Arrow"/>
+    </Style>
+
+    <!-- ── Button.view-toggle — grid/list mode buttons ─────
+         Accent-tint active state, NO left-bar indicator so
+         they don't render as a bracket `{` shape.           -->
+    <Style Selector="Button.view-toggle">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="7,5"/>
+    </Style>
+    <Style Selector="Button.view-toggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
+    </Style>
+    <Style Selector="Button.view-toggle:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaPressOverlayBrush}"/>
+    </Style>
+    <!-- Active: accent-tint fill, no border/bar -->
+    <Style Selector="Button.view-toggle.active">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+    </Style>
+    <Style Selector="Button.view-toggle.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
+    </Style>
+    <!-- Icon tint when active -->
+    <Style Selector="Button.view-toggle.active Border.nav-icon-box">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+
+    <!-- Nav icon box (small colored square) -->
     <Style Selector="Border.nav-icon-box">
         <Setter Property="Background" Value="{DynamicResource NebulaTextSubtleBrush}"/>
     </Style>
     <Style Selector="Button.ghost.active Border.nav-icon-box">
         <Setter Property="Background" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+
+    <!-- Nav icon ring (circle outline) -->
+    <Style Selector="Border.nav-icon-ring">
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaTextSubtleBrush}"/>
+    </Style>
+    <Style Selector="Button.ghost.active Border.nav-icon-ring">
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+
+    <!-- Search container box -->
+    <Style Selector="Border.search-box">
+        <Setter Property="Background"      Value="{DynamicResource NebulaSurface2Brush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Height"          Value="34"/>
+    </Style>
+    <Style Selector="Border.search-box:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaTextSubtleBrush}"/>
+    </Style>
+
+    <!-- Borderless TextBox (used inside search-box container) -->
+    <Style Selector="TextBox.borderless">
+        <Setter Property="Background"              Value="Transparent"/>
+        <Setter Property="BorderThickness"         Value="0"/>
+        <Setter Property="Padding"                 Value="0,0,8,0"/>
+        <Setter Property="CornerRadius"            Value="0"/>
+        <Setter Property="VerticalAlignment"       Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <!-- Suppress inner Fluent-template border in every state so no double-border flash -->
+    <Style Selector="TextBox.borderless /template/ Border">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TextBox.borderless:pointerover /template/ Border">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TextBox.borderless:focus /template/ Border">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TextBox.borderless:focus">
+        <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
 
     <!-- ── Button.ide-row — settings IDE list rows ──────── -->

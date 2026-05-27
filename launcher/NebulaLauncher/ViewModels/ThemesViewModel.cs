@@ -123,6 +123,12 @@ public partial class ThemesViewModel : ViewModelBase
     public ObservableCollection<PresetOptionViewModel> Presets { get; } = [];
     public ObservableCollection<ColorSectionViewModel> Sections { get; } = [];
 
+    /// <summary>
+    /// Exposes the singleton so ThemesView can bind the visual-effects toggles
+    /// without any extra plumbing.
+    /// </summary>
+    public AppearanceViewModel Appearance => AppearanceViewModel.Current;
+
     public ThemesViewModel()
     {
         _activePreset = ThemeService.LoadActive();
@@ -157,6 +163,8 @@ public partial class ThemesViewModel : ViewModelBase
         // Rebuild sections so hex inputs and swatches update
         RefreshSectionColors();
         ThemeManager.Apply(_activePreset);
+        // Recompute NebulaToolbarBrush — it depends on surface color + glass toggle
+        AppearanceViewModel.Current.Apply();
         ThemeService.Save(_activePreset);
     }
 
@@ -219,8 +227,9 @@ public partial class ThemesViewModel : ViewModelBase
         SetPresetColor(entry.PropertyName, entry.Color);
         // Deselect any built-in preset since we've diverged
         foreach (var p in Presets) p.IsSelected = false;
-        // Apply live
+        // Apply live — recompute toolbar brush too (depends on surface color)
         ThemeManager.Apply(_activePreset);
+        AppearanceViewModel.Current.Apply();
         ThemeService.Save(_activePreset);
     }
 

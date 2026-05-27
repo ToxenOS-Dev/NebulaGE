@@ -111,6 +111,90 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
+            <!-- ── Visual Effects ─────────────────────────── -->
+            <StackPanel Margin="0,28,0,0" Spacing="0">
+
+                <TextBlock Text="VISUAL EFFECTS"
+                           FontSize="10" FontWeight="Medium"
+                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                           LetterSpacing="1.2"
+                           Margin="0,0,0,8"/>
+
+                <Border Background="{DynamicResource NebulaSurfaceBrush}"
+                        BorderBrush="{DynamicResource NebulaBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                    <StackPanel Spacing="0">
+
+                        <!-- Ambient glow blobs -->
+                        <Border BorderBrush="{DynamicResource NebulaBorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="Ambient glow blobs"
+                                               FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="Soft glowing ellipses behind the UI — subtle depth effect."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                             IsChecked="{Binding Appearance.AmbientGlowEnabled}"
+                                             VerticalAlignment="Center"
+                                             Margin="16,0,0,0"
+                                             OffContent=""
+                                             OnContent=""/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Sidebar blur -->
+                        <Border BorderBrush="{DynamicResource NebulaBorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="Sidebar acrylic blur"
+                                               FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="Blur the desktop behind the sidebar panel (compositor-dependent)."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                             IsChecked="{Binding Appearance.SidebarBlurEnabled}"
+                                             VerticalAlignment="Center"
+                                             Margin="16,0,0,0"
+                                             OffContent=""
+                                             OnContent=""/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Glass surfaces -->
+                        <Border Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="Glass / frosted surfaces"
+                                               FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="Semi-transparent toolbar and panel backgrounds with layered depth."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <ToggleSwitch Grid.Column="1"
+                                             IsChecked="{Binding Appearance.GlassSurfacesEnabled}"
+                                             VerticalAlignment="Center"
+                                             Margin="16,0,0,0"
+                                             OffContent=""
+                                             OnContent=""/>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
             <!-- Bottom padding -->
             <Border Height="24"/>
 

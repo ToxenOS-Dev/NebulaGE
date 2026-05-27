@@ -4,127 +4,220 @@
         x:Class="NebulaLauncher.Views.NewProjectDialog"
         x:DataType="vm:NewProjectDialogViewModel"
         Title="New Project"
-        Width="480"
-        SizeToContent="Height"
-        MinHeight="300"
+        Width="760" Height="500"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource NebulaBgBrush}"
+        Foreground="{DynamicResource NebulaTextBrush}"
         FontFamily="Inter,Segoe UI,system-ui,sans-serif"
         FontSize="13">
 
     <!--
-        Grid rows:
-          0 — Title       (Auto)
-          1 — Form        (Auto — content drives height, SizeToContent handles window)
-          2 — Separator   (Auto)
-          3 — Buttons     (Auto — always pinned at bottom)
+        Layout:
+          Row 0 — header bar (title + subtitle left | "PROJECT SETTINGS" right)
+          Row 1 — body: template grid left | vertical sep | form sidebar right
+          Row 2 — footer: Cancel + Create Project
     -->
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
-          Margin="24,20,24,24">
+    <Grid RowDefinitions="Auto,*,Auto">
 
-        <!-- ── Title ─────────────────────────────────────── -->
-        <TextBlock Grid.Row="0"
-                   Text="New Project"
-                   FontSize="16"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,20"/>
+        <!-- ── Header ──────────────────────────────────────── -->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,1,240">
 
-        <!-- ── Form ──────────────────────────────────────── -->
-        <StackPanel Grid.Row="1" Spacing="16">
+                <!-- Title + subtitle -->
+                <Border Grid.Column="0" Padding="24,16,24,14">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="New Project"
+                                   FontSize="17" FontWeight="SemiBold"/>
+                        <TextBlock Text="Configure your new NebulaGE project"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                    </StackPanel>
+                </Border>
 
-            <!-- Project Name -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Project Name"
-                           FontSize="11" FontWeight="Medium"
-                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
-                <TextBox Text="{Binding ProjectName}"
-                         Watermark="MyGame"
-                         x:Name="NameInput"/>
-            </StackPanel>
+                <!-- Vertical divider -->
+                <Border Grid.Column="1" Background="{DynamicResource NebulaBorderBrush}"/>
 
-            <!-- Location -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Location"
-                           FontSize="11" FontWeight="Medium"
-                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
-                <Grid ColumnDefinitions="*,8,Auto">
-                    <TextBox Grid.Column="0" Text="{Binding Location}"/>
-                    <Button Grid.Column="2" Content="Browse" MinWidth="72"
-                            Click="OnBrowseLocation"/>
-                </Grid>
-            </StackPanel>
+                <!-- Sidebar header label -->
+                <Border Grid.Column="2" Padding="20,0">
+                    <TextBlock Text="PROJECT SETTINGS"
+                               FontSize="10" FontWeight="Medium"
+                               LetterSpacing="1.2"
+                               Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                               VerticalAlignment="Center"/>
+                </Border>
 
-            <!-- Template cards -->
-            <StackPanel Spacing="6">
-                <TextBlock Text="Template"
-                           FontSize="11" FontWeight="Medium"
-                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
-                <ItemsControl ItemsSource="{Binding TemplateCards}">
+            </Grid>
+        </Border>
+
+        <!-- ── Body ────────────────────────────────────────── -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,1,240">
+
+            <!-- ── Left: template image grid ─────────────── -->
+            <Grid Grid.Column="0"
+                  RowDefinitions="Auto,*"
+                  Margin="20,18,16,16">
+
+                <!-- "TEMPLATE" label -->
+                <TextBlock Grid.Row="0"
+                           Text="TEMPLATE"
+                           FontSize="10" FontWeight="Medium"
+                           LetterSpacing="1.2"
+                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                           Margin="0,0,0,10"/>
+
+                <!-- Cards — negative right margin cancels trailing card margin -->
+                <ItemsControl Grid.Row="1"
+                              ItemsSource="{Binding TemplateCards}"
+                              Margin="0,0,-8,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="8"/>
+                            <UniformGrid Columns="2"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="vm:TemplateCardViewModel">
-                            <Button Classes="template-card"
+
+                            <Button Classes="template-image"
                                     Classes.selected="{Binding IsSelected}"
                                     IsEnabled="{Binding IsAvailable}"
                                     Command="{Binding SelectCommand}"
-                                    MinWidth="120"
-                                    Padding="12,10">
-                                <StackPanel Spacing="3">
-                                    <TextBlock Text="{Binding Label}"
-                                               FontSize="12" FontWeight="Medium"/>
-                                    <TextBlock Text="{Binding Description}"
-                                               FontSize="10"
-                                               Foreground="{DynamicResource NebulaTextMutedBrush}"
-                                               TextWrapping="Wrap"/>
-                                </StackPanel>
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Stretch"
+                                    Margin="0,0,8,8">
+
+                                <!-- Clipped visual content — clips gradient + blob to button radius -->
+                                <Border CornerRadius="6" ClipToBounds="True">
+                                    <Panel>
+
+                                        <!-- 1: Solid base colour -->
+                                        <Border Background="{Binding CardBgBrush}"/>
+
+                                        <!-- 2: Decorative glow blob (top-left, bleeds outside) -->
+                                        <Canvas IsHitTestVisible="False" ClipToBounds="True">
+                                            <Ellipse Canvas.Left="-50" Canvas.Top="-70"
+                                                     Width="300" Height="300"
+                                                     Fill="{Binding BlobBrush}"
+                                                     Opacity="0.24">
+                                                <Ellipse.Effect><BlurEffect Radius="60"/></Ellipse.Effect>
+                                            </Ellipse>
+                                        </Canvas>
+
+                                        <!-- 3: Bottom gradient fade (transparent → near-black) -->
+                                        <Border VerticalAlignment="Bottom" Height="90">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                    <GradientStop Color="Transparent"  Offset="0"/>
+                                                    <GradientStop Color="#D2060609"    Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+
+                                        <!-- 4: Text overlay — bottom-right -->
+                                        <StackPanel HorizontalAlignment="Right"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="0,0,13,11"
+                                                    Spacing="2">
+                                            <TextBlock Text="{Binding Label}"
+                                                       FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding Description}"
+                                                       FontSize="10"
+                                                       Foreground="#99FFFFFF"
+                                                       HorizontalAlignment="Right"/>
+                                        </StackPanel>
+
+                                        <!-- 5: SOON badge — top-right corner -->
+                                        <Border IsVisible="{Binding IsComingSoon}"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Top"
+                                                Margin="0,8,8,0"
+                                                Padding="6,3"
+                                                CornerRadius="4"
+                                                Background="{DynamicResource NebulaSurface3Brush}"
+                                                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                                                BorderThickness="1">
+                                            <TextBlock Text="SOON"
+                                                       FontSize="8" FontWeight="Medium"
+                                                       LetterSpacing="0.8"
+                                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                                        </Border>
+
+                                    </Panel>
+                                </Border>
                             </Button>
+
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </StackPanel>
 
-            <!-- Path preview -->
-            <Border Background="{DynamicResource NebulaSurfaceBrush}"
-                    BorderBrush="{DynamicResource NebulaBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="12,9">
-                <StackPanel Spacing="3">
-                    <TextBlock Text="Will be created at"
-                               FontSize="10"
+            </Grid>
+
+            <!-- Column separator -->
+            <Border Grid.Column="1" Background="{DynamicResource NebulaBorderBrush}"/>
+
+            <!-- ── Right sidebar: project settings ───────── -->
+            <StackPanel Grid.Column="2"
+                        Margin="20,20,20,16"
+                        Spacing="22">
+
+                <!-- Project name -->
+                <StackPanel Spacing="7">
+                    <TextBlock Text="PROJECT NAME"
+                               FontSize="10" FontWeight="Medium"
+                               LetterSpacing="1.2"
                                Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
-                    <TextBlock Text="{Binding FullPath}"
+                    <TextBox x:Name="NameInput"
+                             Text="{Binding ProjectName}"
+                             Watermark="MyGame"/>
+                </StackPanel>
+
+                <!-- Location — plain text + link button, no container box -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="LOCATION"
+                               FontSize="10" FontWeight="Medium"
+                               LetterSpacing="1.2"
+                               Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                    <TextBlock Text="{Binding Location}"
                                FontSize="12"
                                Foreground="{DynamicResource NebulaTextMutedBrush}"
                                TextWrapping="Wrap"/>
+                    <Button Classes="ghost"
+                            HorizontalAlignment="Left"
+                            Padding="0,2"
+                            Click="OnBrowseLocation">
+                        <TextBlock Text="Change folder →"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource NebulaAccentBrush}"/>
+                    </Button>
                 </StackPanel>
-            </Border>
 
-        </StackPanel>
+            </StackPanel>
 
-        <!-- ── Divider ────────────────────────────────────── -->
+        </Grid>
+
+        <!-- ── Footer ──────────────────────────────────────── -->
         <Border Grid.Row="2"
-                Height="1"
-                Background="{DynamicResource NebulaBorderBrush}"
-                Margin="0,20,0,0"/>
-
-        <!-- ── Buttons — always at bottom ────────────────── -->
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="8"
-                    Margin="0,12,0,0">
-            <Button Content="Cancel" MinWidth="80" Click="OnCancel"/>
-            <Button Classes="accent"
-                    Content="+ Create Project"
-                    MinWidth="128"
-                    IsEnabled="{Binding CanCreate}"
-                    Click="OnCreate"/>
-        </StackPanel>
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,8,Auto"
+                  Margin="24,13,24,16">
+                <Button Grid.Column="1"
+                        Content="Cancel"
+                        MinWidth="88" Padding="14,7"
+                        Click="OnCancel"/>
+                <Button Grid.Column="3"
+                        Classes="accent"
+                        Content="+ Create Project"
+                        MinWidth="140" Padding="14,7"
+                        IsEnabled="{Binding CanCreate}"
+                        Click="OnCreate"/>
+            </Grid>
+        </Border>
 
     </Grid>
 
