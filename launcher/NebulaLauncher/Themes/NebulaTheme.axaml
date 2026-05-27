@@ -180,9 +180,12 @@
         <Setter Property="Foreground" Value="{DynamicResource NebulaTextMutedBrush}"/>
     </Style>
 
-    <!-- ── Nav items — active (accent highlight) ─────────── -->
+    <!-- ── Nav items — active (accent highlight + left bar) ─── -->
     <Style Selector="Button.ghost.active">
-        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Background"      Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaAccentBrush}"/>
+        <Setter Property="BorderThickness" Value="3,0,0,0"/>
+        <Setter Property="CornerRadius"    Value="0,4,4,0"/>
     </Style>
     <Style Selector="Button.ghost.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
@@ -192,6 +195,14 @@
     </Style>
     <Style Selector="Button.ghost.active TextBlock.nav-label">
         <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
+    </Style>
+
+    <!-- Nav icon box (small colored square, replaces emoji) -->
+    <Style Selector="Border.nav-icon-box">
+        <Setter Property="Background" Value="{DynamicResource NebulaTextSubtleBrush}"/>
+    </Style>
+    <Style Selector="Button.ghost.active Border.nav-icon-box">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
 
     <!-- ── Button.ide-row — settings IDE list rows ──────── -->

@@ -11,85 +11,94 @@
         Background="Transparent">
 
     <!--
-        Layer stack (bottom → top):
-          0  Solid NebulaBg — always-on floor so the window is never naked
-          1  Ambient blob canvas — large blurred ellipses create soft glow puddles
-          2  Main UI grid — sidebar is acrylic (blurs layers 0+1), content is transparent
+        Layers (bottom → top):
+          0  Solid NebulaBg floor
+          1  Global ambient blob canvas
+          2  Sidebar column: its OWN blob layer + acrylic + nav
+          3  Content column: transparent — global blobs glow through gaps
     -->
     <Panel>
 
-        <!-- ── 0: Solid background floor ────────────────────── -->
+        <!-- ── 0: Solid background floor ─────────────────────── -->
         <Border Background="{DynamicResource NebulaBgBrush}"/>
 
-        <!-- ── 1: Ambient glow blobs ─────────────────────────
-             Canvas stretches to fill the Panel inside a Grid.
-             Children positioned with absolute Canvas.Left/Top.
-             BlurEffect with large radius dissolves hard edges into
-             a soft, cloud-like ambient glow.
-        ─────────────────────────────────────────────────────── -->
+        <!-- ── 1: Global ambient blobs ───────────────────────── -->
         <Grid IsHitTestVisible="False">
             <Canvas>
-                <!-- Primary blob — bottom-left corner -->
+                <!-- Primary — lower-left -->
                 <Ellipse Canvas.Left="-160" Canvas.Top="320"
                          Width="680" Height="680"
                          Fill="{DynamicResource NebulaAccentBrush}"
-                         Opacity="0.11">
-                    <Ellipse.Effect>
-                        <BlurEffect Radius="100"/>
-                    </Ellipse.Effect>
+                         Opacity="0.10">
+                    <Ellipse.Effect><BlurEffect Radius="100"/></Ellipse.Effect>
                 </Ellipse>
-
-                <!-- Secondary blob — upper-right corner -->
-                <Ellipse Canvas.Left="780" Canvas.Top="-160"
+                <!-- Secondary — upper-right -->
+                <Ellipse Canvas.Left="800" Canvas.Top="-160"
                          Width="460" Height="460"
                          Fill="{DynamicResource NebulaAccentBrush}"
                          Opacity="0.06">
-                    <Ellipse.Effect>
-                        <BlurEffect Radius="80"/>
-                    </Ellipse.Effect>
+                    <Ellipse.Effect><BlurEffect Radius="80"/></Ellipse.Effect>
                 </Ellipse>
-
-                <!-- Tiny accent spark — center-right, adds depth -->
+                <!-- Accent spark — mid-right -->
                 <Ellipse Canvas.Left="860" Canvas.Top="380"
                          Width="220" Height="220"
                          Fill="{DynamicResource NebulaAccentBrush}"
                          Opacity="0.05">
-                    <Ellipse.Effect>
-                        <BlurEffect Radius="50"/>
-                    </Ellipse.Effect>
+                    <Ellipse.Effect><BlurEffect Radius="50"/></Ellipse.Effect>
                 </Ellipse>
             </Canvas>
         </Grid>
 
-        <!-- ── 2: Main UI ────────────────────────────────────── -->
+        <!-- ── 2+3: Main UI ──────────────────────────────────── -->
         <Grid ColumnDefinitions="200,*">
 
-            <!-- ── Sidebar — acrylic frosted glass ────────────
-                 ExperimentalAcrylicBorder blurs everything behind it
-                 (the blobs on layer 1, plus any content behind the window
-                 if the compositor supports it).
-                 Falls back gracefully to solid TintColor on unsupported systems.
-            ───────────────────────────────────────────────────── -->
+            <!-- ── Sidebar ──────────────────────────────────────
+                 Three layers inside the sidebar Panel:
+                   a) ExperimentalAcrylicBorder (blurs what's behind the whole window)
+                   b) Sidebar-own blob canvas (visible even without compositor blur)
+                   c) Nav content + right separator border
+            ─────────────────────────────────────────────────────── -->
             <Panel Grid.Column="0">
+
+                <!-- a) Acrylic blur layer -->
                 <ExperimentalAcrylicBorder>
                     <ExperimentalAcrylicBorder.Material>
                         <ExperimentalAcrylicMaterial BackgroundSource="Digger"
                                                       TintColor="{DynamicResource NebulaSurface}"
-                                                      TintOpacity="0.82"
+                                                      TintOpacity="0.80"
                                                       MaterialOpacity="0.92"/>
                     </ExperimentalAcrylicBorder.Material>
-                    <!-- Stretch filler so acrylic covers the full sidebar -->
                     <Panel/>
                 </ExperimentalAcrylicBorder>
 
-                <!-- Nav content + right separator line -->
+                <!-- b) Sidebar-own ambient glow (guaranteed visible) -->
+                <Grid IsHitTestVisible="False">
+                    <Canvas>
+                        <!-- Top-left brand glow -->
+                        <Ellipse Canvas.Left="-60" Canvas.Top="-80"
+                                 Width="280" Height="280"
+                                 Fill="{DynamicResource NebulaAccentBrush}"
+                                 Opacity="0.18">
+                            <Ellipse.Effect><BlurEffect Radius="65"/></Ellipse.Effect>
+                        </Ellipse>
+                        <!-- Bottom-left footer glow -->
+                        <Ellipse Canvas.Left="-40" Canvas.Top="520"
+                                 Width="200" Height="200"
+                                 Fill="{DynamicResource NebulaAccentBrush}"
+                                 Opacity="0.10">
+                            <Ellipse.Effect><BlurEffect Radius="50"/></Ellipse.Effect>
+                        </Ellipse>
+                    </Canvas>
+                </Grid>
+
+                <!-- c) Nav content -->
                 <Border BorderBrush="{DynamicResource NebulaBorderBrush}"
                         BorderThickness="0,0,1,0">
                     <DockPanel>
 
                         <!-- Brand -->
                         <Border DockPanel.Dock="Top"
-                                Padding="16,20,16,16"
+                                Padding="18,20,16,16"
                                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                                 BorderThickness="0,0,0,1">
                             <StackPanel Spacing="2">
@@ -104,23 +113,25 @@
 
                         <!-- Settings pinned to bottom -->
                         <Border DockPanel.Dock="Bottom"
-                                Padding="8"
+                                Padding="0,6,0,6"
                                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                                 BorderThickness="0,1,0,0">
                             <Button Classes="ghost"
                                     Classes.active="{Binding IsSettingsSelected}"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Left"
-                                    Padding="8,7"
+                                    Padding="16,8"
+                                    CornerRadius="0"
                                     Command="{Binding NavigateCommand}"
                                     CommandParameter="{x:Static vm:NavItem.Settings}">
-                                <StackPanel Orientation="Horizontal" Spacing="9">
-                                    <TextBlock Text="⚙"
-                                               Classes="nav-icon"
-                                               FontSize="13"
-                                               VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="7" Height="7"
+                                            CornerRadius="1"
+                                            Classes="nav-icon-box"
+                                            VerticalAlignment="Center"/>
                                     <TextBlock Text="Settings"
                                                Classes="nav-label"
+                                               FontSize="13"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -128,23 +139,25 @@
 
                         <!-- Nav items -->
                         <StackPanel DockPanel.Dock="Top"
-                                    Spacing="2"
-                                    Margin="8,12,8,0">
+                                    Spacing="1"
+                                    Margin="0,12,0,0">
 
                             <Button Classes="ghost"
                                     Classes.active="{Binding IsProjectsSelected}"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Left"
-                                    Padding="8,7"
+                                    Padding="16,9"
+                                    CornerRadius="0"
                                     Command="{Binding NavigateCommand}"
                                     CommandParameter="{x:Static vm:NavItem.Projects}">
-                                <StackPanel Orientation="Horizontal" Spacing="9">
-                                    <TextBlock Text="⬡"
-                                               Classes="nav-icon"
-                                               FontSize="13"
-                                               VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="7" Height="7"
+                                            CornerRadius="1"
+                                            Classes="nav-icon-box"
+                                            VerticalAlignment="Center"/>
                                     <TextBlock Text="Projects"
                                                Classes="nav-label"
+                                               FontSize="13"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -153,16 +166,18 @@
                                     Classes.active="{Binding IsEnginesSelected}"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Left"
-                                    Padding="8,7"
+                                    Padding="16,9"
+                                    CornerRadius="0"
                                     Command="{Binding NavigateCommand}"
                                     CommandParameter="{x:Static vm:NavItem.Engines}">
-                                <StackPanel Orientation="Horizontal" Spacing="9">
-                                    <TextBlock Text="◈"
-                                               Classes="nav-icon"
-                                               FontSize="13"
-                                               VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="7" Height="7"
+                                            CornerRadius="7"
+                                            Classes="nav-icon-box"
+                                            VerticalAlignment="Center"/>
                                     <TextBlock Text="Engine Versions"
                                                Classes="nav-label"
+                                               FontSize="13"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -171,9 +186,10 @@
 
                     </DockPanel>
                 </Border>
+
             </Panel>
 
-            <!-- ── Content area — transparent so blobs glow through ── -->
+            <!-- ── Content area ───────────────────────────────── -->
             <ContentControl Grid.Column="1"
                             Content="{Binding CurrentPage}">
                 <ContentControl.DataTemplates>
