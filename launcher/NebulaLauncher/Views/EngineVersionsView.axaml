@@ -1,0 +1,273 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NebulaLauncher.ViewModels"
+             x:Class="NebulaLauncher.Views.EngineVersionsView"
+             x:DataType="vm:EngineVersionsViewModel">
+
+    <DockPanel>
+
+        <!-- ── Toolbar ──────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top"
+                Padding="18,10"
+                Background="{DynamicResource NebulaToolbarBrush}"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+
+                <!-- Left: nothing for now; future: search -->
+                <Border Grid.Column="0"/>
+
+                <!-- Right: action buttons -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                    <Button Classes="accent"
+                            Padding="12,6"
+                            Click="OnAddLocalBuild">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="+"
+                                       FontSize="15" FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Add Local Build"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6"
+                            Click="OnBrowseReleases">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="Browse Releases"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="↗"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <!-- ── Error banner ─────────────────────────────────── -->
+        <Border DockPanel.Dock="Top"
+                IsVisible="{Binding HasError}"
+                Background="{DynamicResource NebulaErrorSurfaceBrush}"
+                BorderBrush="{DynamicResource NebulaErrorBorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="20,0">
+            <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="40">
+                <TextBlock Grid.Column="0"
+                           Text="⚠"
+                           Foreground="{DynamicResource NebulaErrorBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource NebulaErrorTextBrush}"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"/>
+                <Button Grid.Column="2"
+                        Classes="ghost"
+                        Foreground="{DynamicResource NebulaErrorBrush}"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Command="{Binding DismissErrorCommand}">✕</Button>
+            </Grid>
+        </Border>
+
+        <!-- ── Section header ───────────────────────────────── -->
+        <Border DockPanel.Dock="Top"
+                Padding="20,10,16,10"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
+                BorderThickness="0,0,0,1">
+            <TextBlock Text="{Binding SectionHeader}"
+                       FontSize="10" FontWeight="Medium"
+                       LetterSpacing="1.2"
+                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- ── Engine list / empty state ────────────────────── -->
+        <Panel DockPanel.Dock="Top">
+
+            <!-- ── Installed list ───────────────────────────── -->
+            <ScrollViewer IsVisible="{Binding HasEngines}">
+                <ItemsControl ItemsSource="{Binding Engines}"
+                              Margin="16,12,16,16">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="2"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:EngineItemViewModel">
+
+                            <Border Classes="engine-row"
+                                    CornerRadius="6"
+                                    Padding="14,11">
+
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Set as Default"
+                                                  Command="{Binding SetDefaultCommand}"
+                                                  IsEnabled="{Binding IsNotDefault}"/>
+                                        <MenuItem Header="Show in Files"
+                                                  Command="{Binding ShowInFilesCommand}"/>
+                                        <Separator/>
+                                        <MenuItem Header="Remove"
+                                                  Command="{Binding RemoveCommand}"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                    <!-- Version badge -->
+                                    <Border Grid.Column="0"
+                                            Classes="engine-badge"
+                                            Classes.active="{Binding IsDefault}"
+                                            Margin="0,0,14,0">
+                                        <TextBlock Text="{Binding VersionShort}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- Version + path -->
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="3"
+                                                VerticalAlignment="Center">
+
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Version}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"/>
+                                            <!-- DEFAULT badge -->
+                                            <Border IsVisible="{Binding IsDefault}"
+                                                    Background="{DynamicResource NebulaAccentSurfaceBrush}"
+                                                    BorderBrush="{DynamicResource NebulaAccentBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="3"
+                                                    Padding="6,2">
+                                                <TextBlock Text="DEFAULT"
+                                                           FontSize="9"
+                                                           FontWeight="Medium"
+                                                           LetterSpacing="0.8"
+                                                           Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <TextBlock Text="{Binding Path}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+
+                                    </StackPanel>
+
+                                    <!-- Action buttons -->
+                                    <StackPanel Grid.Column="2"
+                                                Orientation="Horizontal"
+                                                Spacing="4"
+                                                VerticalAlignment="Center">
+
+                                        <Button Classes="ghost"
+                                                IsVisible="{Binding IsNotDefault}"
+                                                Padding="8,5"
+                                                CornerRadius="4"
+                                                Command="{Binding SetDefaultCommand}">
+                                            <TextBlock Text="Set Default"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Button>
+
+                                        <Button Classes="ghost"
+                                                Padding="8,5"
+                                                CornerRadius="4"
+                                                Command="{Binding ShowInFilesCommand}">
+                                            <TextBlock Text="Show in Files"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Button>
+
+                                        <Button Classes="ghost"
+                                                Padding="8,5"
+                                                CornerRadius="4"
+                                                Command="{Binding RemoveCommand}">
+                                            <TextBlock Text="✕"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                                        </Button>
+
+                                    </StackPanel>
+
+                                </Grid>
+                            </Border>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- ── Empty state ──────────────────────────────── -->
+            <StackPanel IsVisible="{Binding IsEmpty}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="0"
+                        Margin="0,60">
+
+                <!-- Icon circle -->
+                <Border Width="80" Height="80"
+                        CornerRadius="40"
+                        Background="{DynamicResource NebulaSurface2Brush}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20">
+                    <!-- Simple cog/engine outline path -->
+                    <Path HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Stroke="{DynamicResource NebulaTextSubtleBrush}"
+                          StrokeThickness="1.8"
+                          Fill="Transparent"
+                          Data="M 14,6 L 16,6 L 17,9 Q 19.5,9.8 21.5,11.3 L 24.5,10 L 26,11.5
+                                L 24.7,14.5 Q 26.2,16.5 27,19 L 30,20 L 30,22 L 27,23
+                                Q 26.2,25.5 24.7,27.5 L 26,30.5 L 24.5,32 L 21.5,30.7
+                                Q 19.5,32.2 17,33 L 16,36 L 14,36 L 13,33
+                                Q 10.5,32.2 8.5,30.7 L 5.5,32 L 4,30.5 L 5.3,27.5
+                                Q 3.8,25.5 3,23 L 0,22 L 0,20 L 3,19
+                                Q 3.8,16.5 5.3,14.5 L 4,11.5 L 5.5,10 L 8.5,11.3
+                                Q 10.5,9.8 13,9 Z
+                                M 15,14 A 7,7 0 1 0 15,28 A 7,7 0 1 0 15,14"/>
+                </Border>
+
+                <TextBlock Text="No engine versions installed"
+                           FontSize="17"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Text="Add a local build or download a release to get started."
+                           FontSize="13"
+                           Foreground="{DynamicResource NebulaTextMutedBrush}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           MaxWidth="340"
+                           Margin="0,0,0,20"/>
+
+                <Button Classes="accent"
+                        HorizontalAlignment="Center"
+                        Padding="16,8"
+                        Click="OnAddLocalBuild">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="+"
+                                   FontSize="15" FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Add Local Build"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
+        </Panel>
+
+    </DockPanel>
+
+</UserControl>

@@ -233,6 +233,10 @@
                         <views:ProjectHubView/>
                     </DataTemplate>
 
+                    <DataTemplate DataType="vm:EngineVersionsViewModel">
+                        <views:EngineVersionsView/>
+                    </DataTemplate>
+
                     <DataTemplate DataType="vm:SettingsViewModel">
                         <views:SettingsView/>
                     </DataTemplate>

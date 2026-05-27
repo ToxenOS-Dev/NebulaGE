@@ -385,6 +385,44 @@
         <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
     </Style>
 
+    <!-- ── Engine Versions page ──────────────────────── -->
+
+    <!-- engine-row: hoverable container for each installed engine -->
+    <Style Selector="Border.engine-row">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Border.engine-row:pointerover">
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaBorderBrush}"/>
+    </Style>
+
+    <!-- engine-badge: version pill on the left of each row -->
+    <Style Selector="Border.engine-badge">
+        <Setter Property="Background"      Value="{DynamicResource NebulaSurface3Brush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="5"/>
+        <Setter Property="Width"           Value="46"/>
+        <Setter Property="Height"          Value="28"/>
+        <Setter Property="Padding"         Value="6,2"/>
+    </Style>
+    <Style Selector="Border.engine-badge TextBlock">
+        <Setter Property="FontSize"     Value="11"/>
+        <Setter Property="FontWeight"   Value="Medium"/>
+        <Setter Property="Foreground"   Value="{DynamicResource NebulaTextMutedBrush}"/>
+        <Setter Property="LetterSpacing" Value="0.4"/>
+    </Style>
+    <!-- active (default engine) badge — accent tint -->
+    <Style Selector="Border.engine-badge.active">
+        <Setter Property="Background"  Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+    <Style Selector="Border.engine-badge.active TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource NebulaAccentBrush}"/>
+    </Style>
+
     <!-- ── ContextMenu ───────────────────────────────── -->
     <Style Selector="ContextMenu">
         <Setter Property="Background"       Value="{DynamicResource NebulaSurface2Brush}"/>

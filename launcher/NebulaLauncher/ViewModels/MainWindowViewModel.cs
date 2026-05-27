@@ -37,7 +37,7 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentPage = item switch
         {
             NavItem.Projects => new ProjectHubViewModel(),
-            NavItem.Engines  => new StubPageViewModel("Engine Versions", "Engine version management coming soon."),
+            NavItem.Engines  => new EngineVersionsViewModel(),
             NavItem.Settings => new SettingsViewModel(),
             _                => CurrentPage
         };
