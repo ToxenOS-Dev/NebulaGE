@@ -9,7 +9,6 @@
         MinHeight="300"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Background="#0F0F11"
         FontFamily="Inter,Segoe UI,system-ui,sans-serif"
         FontSize="13">
 
@@ -28,7 +27,6 @@
                    Text="New Project"
                    FontSize="16"
                    FontWeight="SemiBold"
-                   Foreground="#E2E2E8"
                    Margin="0,0,0,20"/>
 
         <!-- ── Form ──────────────────────────────────────── -->
@@ -38,7 +36,7 @@
             <StackPanel Spacing="6">
                 <TextBlock Text="Project Name"
                            FontSize="11" FontWeight="Medium"
-                           Foreground="#8888A0"/>
+                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
                 <TextBox Text="{Binding ProjectName}"
                          Watermark="MyGame"
                          x:Name="NameInput"/>
@@ -48,7 +46,7 @@
             <StackPanel Spacing="6">
                 <TextBlock Text="Location"
                            FontSize="11" FontWeight="Medium"
-                           Foreground="#8888A0"/>
+                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
                 <Grid ColumnDefinitions="*,8,Auto">
                     <TextBox Grid.Column="0" Text="{Binding Location}"/>
                     <Button Grid.Column="2" Content="Browse" MinWidth="72"
@@ -60,7 +58,7 @@
             <StackPanel Spacing="6">
                 <TextBlock Text="Template"
                            FontSize="11" FontWeight="Medium"
-                           Foreground="#8888A0"/>
+                           Foreground="{DynamicResource NebulaTextMutedBrush}"/>
                 <ItemsControl ItemsSource="{Binding TemplateCards}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -79,7 +77,8 @@
                                     <TextBlock Text="{Binding Label}"
                                                FontSize="12" FontWeight="Medium"/>
                                     <TextBlock Text="{Binding Description}"
-                                               FontSize="10" Foreground="#8888A0"
+                                               FontSize="10"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"
                                                TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Button>
@@ -89,16 +88,18 @@
             </StackPanel>
 
             <!-- Path preview -->
-            <Border Background="#16161A"
-                    BorderBrush="#2A2A30"
+            <Border Background="{DynamicResource NebulaSurfaceBrush}"
+                    BorderBrush="{DynamicResource NebulaBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
                     Padding="12,9">
                 <StackPanel Spacing="3">
                     <TextBlock Text="Will be created at"
-                               FontSize="10" Foreground="#44445A"/>
+                               FontSize="10"
+                               Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
                     <TextBlock Text="{Binding FullPath}"
-                               FontSize="12" Foreground="#8888A0"
+                               FontSize="12"
+                               Foreground="{DynamicResource NebulaTextMutedBrush}"
                                TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
@@ -108,7 +109,7 @@
         <!-- ── Divider ────────────────────────────────────── -->
         <Border Grid.Row="2"
                 Height="1"
-                Background="#2A2A30"
+                Background="{DynamicResource NebulaBorderBrush}"
                 Margin="0,20,0,0"/>
 
         <!-- ── Buttons — always at bottom ────────────────── -->

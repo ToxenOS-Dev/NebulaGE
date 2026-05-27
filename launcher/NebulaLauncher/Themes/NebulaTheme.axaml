@@ -2,8 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ══════════════════════════════════════════════════
-         NebulaGE Color Palette
-         Dark, professional, muted — purple accents only.
+         NebulaGE Color Palette — DEFAULT VALUES
+         These are overridden at runtime by ThemeManager.Apply()
+         via Application.Current.Resources (DynamicResource wins).
          ══════════════════════════════════════════════════ -->
     <Styles.Resources>
 
@@ -38,59 +39,68 @@
         <Color x:Key="NebulaGitDeleted">#E05C5C</Color>
         <Color x:Key="NebulaGitConflict">#E05C5C</Color>
 
-        <!-- Brushes -->
+        <!-- Brushes — base -->
         <SolidColorBrush x:Key="NebulaBgBrush"           Color="{StaticResource NebulaBg}"/>
         <SolidColorBrush x:Key="NebulaSurfaceBrush"      Color="{StaticResource NebulaSurface}"/>
         <SolidColorBrush x:Key="NebulaSurface2Brush"     Color="{StaticResource NebulaSurface2}"/>
         <SolidColorBrush x:Key="NebulaSurface3Brush"     Color="{StaticResource NebulaSurface3}"/>
         <SolidColorBrush x:Key="NebulaBorderBrush"       Color="{StaticResource NebulaBorder}"/>
+        <SolidColorBrush x:Key="NebulaBorderSubtleBrush" Color="{StaticResource NebulaBorderSubtle}"/>
         <SolidColorBrush x:Key="NebulaTextBrush"         Color="{StaticResource NebulaText}"/>
         <SolidColorBrush x:Key="NebulaTextMutedBrush"    Color="{StaticResource NebulaTextMuted}"/>
         <SolidColorBrush x:Key="NebulaTextSubtleBrush"   Color="{StaticResource NebulaTextSubtle}"/>
         <SolidColorBrush x:Key="NebulaAccentBrush"       Color="{StaticResource NebulaAccent}"/>
+        <SolidColorBrush x:Key="NebulaAccentHoverBrush"  Color="{StaticResource NebulaAccentHover}"/>
+        <SolidColorBrush x:Key="NebulaAccentPressedBrush" Color="{StaticResource NebulaAccentPressed}"/>
         <SolidColorBrush x:Key="NebulaSuccessBrush"      Color="{StaticResource NebulaSuccess}"/>
         <SolidColorBrush x:Key="NebulaWarningBrush"      Color="{StaticResource NebulaWarning}"/>
         <SolidColorBrush x:Key="NebulaErrorBrush"        Color="{StaticResource NebulaError}"/>
 
-        <!-- Accent surface (for badges, highlights) -->
-        <SolidColorBrush x:Key="NebulaAccentSurfaceBrush" Color="#8B6FD418"/>
+        <!-- Brushes — derived (computed by ThemeManager at runtime) -->
+        <SolidColorBrush x:Key="NebulaAccentSurfaceBrush"  Color="#188B6FD4"/>
+        <SolidColorBrush x:Key="NebulaAccentSurface2Brush" Color="#258B6FD4"/>
+        <SolidColorBrush x:Key="NebulaErrorSurfaceBrush"   Color="#16E05C5C"/>
+        <SolidColorBrush x:Key="NebulaErrorBorderBrush"    Color="#40E05C5C"/>
+        <SolidColorBrush x:Key="NebulaErrorTextBrush"      Color="#E8A0A0"/>
+        <SolidColorBrush x:Key="NebulaHoverOverlayBrush"   Color="#0DFFFFFF"/>
+        <SolidColorBrush x:Key="NebulaPressOverlayBrush"   Color="#07FFFFFF"/>
 
     </Styles.Resources>
 
     <!-- ── Window ─────────────────────────────────────── -->
     <Style Selector="Window">
-        <Setter Property="Background"  Value="{StaticResource NebulaBgBrush}"/>
+        <Setter Property="Background"  Value="{DynamicResource NebulaBgBrush}"/>
         <Setter Property="FontFamily"  Value="Inter,Segoe UI,system-ui,sans-serif"/>
         <Setter Property="FontSize"    Value="13"/>
-        <Setter Property="Foreground"  Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground"  Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
     <!-- ── TextBlock ──────────────────────────────────── -->
     <Style Selector="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
     <!-- ── TextBox ────────────────────────────────────── -->
     <Style Selector="TextBox">
-        <Setter Property="Background"       Value="{StaticResource NebulaSurfaceBrush}"/>
-        <Setter Property="Foreground"       Value="{StaticResource NebulaTextBrush}"/>
-        <Setter Property="BorderBrush"      Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background"       Value="{DynamicResource NebulaSurfaceBrush}"/>
+        <Setter Property="Foreground"       Value="{DynamicResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"      Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="BorderThickness"  Value="1"/>
         <Setter Property="CornerRadius"     Value="4"/>
         <Setter Property="Padding"          Value="8,6"/>
         <Setter Property="FontSize"         Value="13"/>
-        <Setter Property="CaretBrush"       Value="{StaticResource NebulaAccentBrush}"/>
-        <Setter Property="SelectionBrush"   Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="CaretBrush"       Value="{DynamicResource NebulaAccentBrush}"/>
+        <Setter Property="SelectionBrush"   Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
     </Style>
     <Style Selector="TextBox:focus">
-        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
 
     <!-- ── Button — base ─────────────────────────────── -->
     <Style Selector="Button">
-        <Setter Property="Background"       Value="{StaticResource NebulaSurface2Brush}"/>
-        <Setter Property="Foreground"       Value="{StaticResource NebulaTextBrush}"/>
-        <Setter Property="BorderBrush"      Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background"       Value="{DynamicResource NebulaSurface2Brush}"/>
+        <Setter Property="Foreground"       Value="{DynamicResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"      Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="BorderThickness"  Value="1"/>
         <Setter Property="CornerRadius"     Value="4"/>
         <Setter Property="Padding"          Value="12,6"/>
@@ -98,46 +108,46 @@
         <Setter Property="Cursor"           Value="Hand"/>
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaSurface3Brush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaSurface3Brush}"/>
     </Style>
     <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaSurfaceBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaSurfaceBrush}"/>
     </Style>
 
     <!-- ── Button.accent — filled purple ─────────────── -->
     <Style Selector="Button.accent">
-        <Setter Property="Background"      Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="Background"      Value="{DynamicResource NebulaAccentBrush}"/>
         <Setter Property="Foreground"      Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaAccentHover}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentHoverBrush}"/>
     </Style>
     <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaAccentPressed}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentPressedBrush}"/>
     </Style>
 
     <!-- ── Button.template-card — selectable option card ─ -->
     <Style Selector="Button.template-card">
-        <Setter Property="Background"      Value="{StaticResource NebulaSurfaceBrush}"/>
-        <Setter Property="Foreground"      Value="{StaticResource NebulaTextBrush}"/>
-        <Setter Property="BorderBrush"     Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background"      Value="{DynamicResource NebulaSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius"    Value="5"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
     </Style>
     <Style Selector="Button.template-card:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaSurface2Brush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaSurface2Brush}"/>
     </Style>
     <!-- Selected state: accent border + tinted background -->
     <Style Selector="Button.template-card.selected">
-        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
     <Style Selector="Button.template-card.selected /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
     </Style>
     <Style Selector="Button.template-card.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#8B6FD425"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
     </Style>
     <!-- Disabled (coming soon) -->
     <Style Selector="Button.template-card:disabled">
@@ -151,32 +161,32 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#FFFFFF0D"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
     </Style>
     <Style Selector="Button.ghost:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#FFFFFF06"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaPressOverlayBrush}"/>
     </Style>
 
     <!-- ── Nav items — inactive default ─────────────────── -->
     <Style Selector="TextBlock.nav-icon">
-        <Setter Property="Foreground" Value="{StaticResource NebulaTextMutedBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextMutedBrush}"/>
     </Style>
     <Style Selector="TextBlock.nav-label">
-        <Setter Property="Foreground" Value="{StaticResource NebulaTextMutedBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextMutedBrush}"/>
     </Style>
 
     <!-- ── Nav items — active (accent highlight) ─────────── -->
     <Style Selector="Button.ghost.active">
-        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
     </Style>
     <Style Selector="Button.ghost.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#8B6FD425"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
     </Style>
     <Style Selector="Button.ghost.active TextBlock.nav-icon">
-        <Setter Property="Foreground" Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
     <Style Selector="Button.ghost.active TextBlock.nav-label">
-        <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
     <!-- ── Button.ide-row — settings IDE list rows ──────── -->
@@ -184,21 +194,21 @@
         <Setter Property="Background"      Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="CornerRadius"    Value="0"/>
-        <Setter Property="Foreground"      Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
     <Style Selector="Button.ide-row:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#FFFFFF08"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
     </Style>
     <!-- Selected row: accent tint -->
     <Style Selector="Button.ide-row.selected /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
     </Style>
     <Style Selector="Button.ide-row.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#8B6FD425"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
     </Style>
     <!-- Radio indicator — unselected -->
     <Style Selector="Button.ide-row Border.radio-outer">
-        <Setter Property="BorderBrush" Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="Background"  Value="Transparent"/>
     </Style>
     <Style Selector="Button.ide-row Ellipse.radio-inner">
@@ -207,17 +217,36 @@
     </Style>
     <!-- Radio indicator — selected -->
     <Style Selector="Button.ide-row.selected Border.radio-outer">
-        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NebulaAccentBrush}"/>
     </Style>
     <Style Selector="Button.ide-row.selected Ellipse.radio-inner">
-        <Setter Property="Fill"      Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="Fill"      Value="{DynamicResource NebulaAccentBrush}"/>
         <Setter Property="IsVisible" Value="True"/>
+    </Style>
+
+    <!-- ── Button.settings-tab ───────────────────────────── -->
+    <Style Selector="Button.settings-tab">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="4"/>
+        <Setter Property="Padding"         Value="12,6"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextMutedBrush}"/>
+    </Style>
+    <Style Selector="Button.settings-tab:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
+    </Style>
+    <Style Selector="Button.settings-tab.active">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
+    </Style>
+    <Style Selector="Button.settings-tab.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
     </Style>
 
     <!-- ── ContextMenu ───────────────────────────────── -->
     <Style Selector="ContextMenu">
-        <Setter Property="Background"       Value="{StaticResource NebulaSurface2Brush}"/>
-        <Setter Property="BorderBrush"      Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background"       Value="{DynamicResource NebulaSurface2Brush}"/>
+        <Setter Property="BorderBrush"      Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="BorderThickness"  Value="1"/>
         <Setter Property="CornerRadius"     Value="5"/>
         <Setter Property="Padding"          Value="4"/>
@@ -225,23 +254,23 @@
 
     <!-- ── MenuItem ──────────────────────────────────── -->
     <Style Selector="MenuItem">
-        <Setter Property="Foreground"  Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground"  Value="{DynamicResource NebulaTextBrush}"/>
         <Setter Property="Background"  Value="Transparent"/>
         <Setter Property="Padding"     Value="10,6"/>
         <Setter Property="FontSize"    Value="13"/>
         <Setter Property="Cursor"      Value="Hand"/>
     </Style>
     <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
-        <Setter Property="Background"    Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Background"    Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
         <Setter Property="CornerRadius"  Value="3"/>
     </Style>
     <Style Selector="MenuItem:pointerover > TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
     <!-- ── Separator ─────────────────────────────────── -->
     <Style Selector="Separator">
-        <Setter Property="Background" Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource NebulaBorderBrush}"/>
         <Setter Property="Height"     Value="1"/>
         <Setter Property="Margin"     Value="6,3"/>
     </Style>

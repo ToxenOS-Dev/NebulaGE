@@ -34,6 +34,8 @@ public partial class IdeOptionViewModel : ViewModelBase
 
 // ── Settings page VM ─────────────────────────────────────────────────────────
 
+public enum SettingsSection { General, Themes }
+
 public partial class SettingsViewModel : ViewModelBase
 {
     private readonly IdeDetectionService _ideService = new();
@@ -43,7 +45,17 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private string _defaultProjectLocation;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsGeneralActive))]
+    [NotifyPropertyChangedFor(nameof(IsThemesActive))]
+    private SettingsSection _activeSection = SettingsSection.General;
+
+    public bool IsGeneralActive => ActiveSection == SettingsSection.General;
+    public bool IsThemesActive  => ActiveSection == SettingsSection.Themes;
+
     public bool NoIdesFound => DetectedIdes.Count == 0;
+
+    public ThemesViewModel Themes { get; } = new();
 
     public SettingsViewModel()
     {
@@ -70,7 +82,10 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    // ── Commands ──────────────────────────────────────────────
+    // ── Commands ──────────────────────────────────────────
+
+    [RelayCommand]
+    private void Navigate(SettingsSection section) => ActiveSection = section;
 
     // Called from SettingsView code-behind after folder picker resolves
     public void SetDefaultLocation(string path)
@@ -78,7 +93,7 @@ public partial class SettingsViewModel : ViewModelBase
         DefaultProjectLocation = path;
     }
 
-    // ── Internals ─────────────────────────────────────────────
+    // ── Internals ─────────────────────────────────────────
 
     private void OnIdeSelected(IdeOptionViewModel selected)
     {

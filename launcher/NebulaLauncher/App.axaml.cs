@@ -15,6 +15,9 @@ public partial class App : Application
     {
         RunFirstTimeSetup();
 
+        // Apply the saved theme before any windows open
+        ThemeManager.Apply(ThemeService.LoadActive());
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow

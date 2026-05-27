@@ -6,38 +6,36 @@
         x:DataType="vm:MainWindowViewModel"
         Title="NebulaGE"
         Width="1060" Height="700"
-        MinWidth="820" MinHeight="560"
-        Background="#0F0F11">
+        MinWidth="820" MinHeight="560">
 
     <Grid ColumnDefinitions="200,*">
 
         <!-- ── Sidebar ──────────────────────────────────────── -->
         <Border Grid.Column="0"
-                Background="#16161A"
-                BorderBrush="#2A2A30"
+                Background="{DynamicResource NebulaSurfaceBrush}"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
                 BorderThickness="0,0,1,0">
             <DockPanel>
 
                 <!-- Brand -->
                 <Border DockPanel.Dock="Top"
                         Padding="16,20,16,16"
-                        BorderBrush="#2A2A30"
+                        BorderBrush="{DynamicResource NebulaBorderBrush}"
                         BorderThickness="0,0,0,1">
                     <StackPanel Spacing="2">
                         <TextBlock Text="NebulaGE"
                                    FontSize="17"
-                                   FontWeight="SemiBold"
-                                   Foreground="#E2E2E8"/>
+                                   FontWeight="SemiBold"/>
                         <TextBlock Text="v0.1.0"
                                    FontSize="11"
-                                   Foreground="#44445A"/>
+                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
                     </StackPanel>
                 </Border>
 
                 <!-- Settings pinned to bottom -->
                 <Border DockPanel.Dock="Bottom"
                         Padding="8"
-                        BorderBrush="#2A2A30"
+                        BorderBrush="{DynamicResource NebulaBorderBrush}"
                         BorderThickness="0,1,0,0">
                     <Button Classes="ghost"
                             Classes.active="{Binding IsSettingsSelected}"
@@ -127,7 +125,7 @@
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center"/>
                             <TextBlock Text="{Binding Message}"
-                                       Foreground="#8888A0"
+                                       Foreground="{DynamicResource NebulaTextMutedBrush}"
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Grid>

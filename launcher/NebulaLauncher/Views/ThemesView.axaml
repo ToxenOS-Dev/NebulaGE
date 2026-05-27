@@ -1,0 +1,120 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NebulaLauncher.ViewModels"
+             x:Class="NebulaLauncher.Views.ThemesView"
+             x:DataType="vm:ThemesViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="28,24" Spacing="0" MaxWidth="640">
+
+            <!-- ── Preset strip ──────────────────────────────── -->
+            <TextBlock Text="PRESETS"
+                       FontSize="10" FontWeight="Medium"
+                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                       LetterSpacing="1.2"
+                       Margin="0,0,0,10"/>
+
+            <ItemsControl ItemsSource="{Binding Presets}"
+                          Margin="0,0,0,28">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:PresetOptionViewModel">
+                        <Button Classes="template-card"
+                                Classes.selected="{Binding IsSelected}"
+                                Command="{Binding SelectCommand}"
+                                Margin="0,0,8,8"
+                                Padding="14,8">
+                            <TextBlock Text="{Binding Name}"
+                                       FontSize="12" FontWeight="Medium"/>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- ── Color sections ────────────────────────────── -->
+            <ItemsControl ItemsSource="{Binding Sections}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="28"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ColorSectionViewModel">
+                        <StackPanel Spacing="0">
+
+                            <!-- Section header -->
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="10" FontWeight="Medium"
+                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                       LetterSpacing="1.2"
+                                       Margin="0,0,0,8"/>
+
+                            <!-- Color rows -->
+                            <Border Background="{DynamicResource NebulaSurfaceBrush}"
+                                    BorderBrush="{DynamicResource NebulaBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+                                <ItemsControl ItemsSource="{Binding Entries}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Spacing="0"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="vm:ColorEntryViewModel">
+                                            <Border BorderBrush="{DynamicResource NebulaBorderSubtleBrush}"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="14,10">
+                                                <Grid ColumnDefinitions="*,Auto,120">
+
+                                                    <!-- Label -->
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding Label}"
+                                                               FontSize="13"
+                                                               VerticalAlignment="Center"/>
+
+                                                    <!-- Color swatch -->
+                                                    <Button Grid.Column="1"
+                                                            Width="28" Height="28"
+                                                            Padding="0"
+                                                            CornerRadius="4"
+                                                            BorderThickness="1"
+                                                            BorderBrush="{DynamicResource NebulaBorderBrush}"
+                                                            Background="{Binding PreviewBrush}"
+                                                            Margin="0,0,10,0"
+                                                            ToolTip.Tip="Click to open color picker"
+                                                            Click="OnSwatchClicked"
+                                                            Tag="{Binding}">
+                                                    </Button>
+
+                                                    <!-- Hex input -->
+                                                    <TextBox Grid.Column="2"
+                                                             Text="{Binding HexInput}"
+                                                             FontFamily="Cascadia Code,JetBrains Mono,monospace"
+                                                             FontSize="12"
+                                                             Padding="8,5"
+                                                             VerticalAlignment="Center"/>
+
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Bottom padding -->
+            <Border Height="24"/>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

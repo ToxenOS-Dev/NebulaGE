@@ -2,15 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:NebulaLauncher.ViewModels"
              x:Class="NebulaLauncher.Views.ProjectHubView"
-             x:DataType="vm:ProjectHubViewModel"
-             Background="#0F0F11">
+             x:DataType="vm:ProjectHubViewModel">
 
     <DockPanel>
 
         <!-- ── Toolbar ──────────────────────────────────────── -->
         <Border DockPanel.Dock="Top"
                 Padding="20,14"
-                BorderBrush="#2A2A30"
+                BorderBrush="{DynamicResource NebulaBorderBrush}"
                 BorderThickness="0,0,0,1">
             <Grid ColumnDefinitions="*,Auto">
 
@@ -37,28 +36,28 @@
         <!-- ── Error banner ─────────────────────────────────── -->
         <Border DockPanel.Dock="Top"
                 IsVisible="{Binding HasError}"
-                Background="#E05C5C16"
-                BorderBrush="#E05C5C40"
+                Background="{DynamicResource NebulaErrorSurfaceBrush}"
+                BorderBrush="{DynamicResource NebulaErrorBorderBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="20,0">
             <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="40">
 
                 <TextBlock Grid.Column="0"
                            Text="⚠"
-                           Foreground="#E05C5C"
+                           Foreground="{DynamicResource NebulaErrorBrush}"
                            VerticalAlignment="Center"
                            Margin="0,0,10,0"/>
 
                 <TextBlock Grid.Column="1"
                            Text="{Binding ErrorMessage}"
-                           Foreground="#E8A0A0"
+                           Foreground="{DynamicResource NebulaErrorTextBrush}"
                            FontSize="12"
                            VerticalAlignment="Center"
                            TextWrapping="Wrap"/>
 
                 <Button Grid.Column="2"
                         Classes="ghost"
-                        Foreground="#E05C5C"
+                        Foreground="{DynamicResource NebulaErrorBrush}"
                         Padding="8,4"
                         VerticalAlignment="Center"
                         Command="{Binding DismissErrorCommand}">
@@ -73,7 +72,7 @@
             <TextBlock Text="RECENT PROJECTS"
                        FontSize="10"
                        FontWeight="Medium"
-                       Foreground="#44445A"
+                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
                        LetterSpacing="1.2"/>
         </Border>
 
@@ -122,11 +121,10 @@
                                                 VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Name}"
                                                    FontSize="13"
-                                                   FontWeight="Medium"
-                                                   Foreground="#E2E2E8"/>
+                                                   FontWeight="Medium"/>
                                         <TextBlock Text="{Binding Path}"
                                                    FontSize="11"
-                                                   Foreground="#44445A"/>
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
                                     </StackPanel>
 
                                     <!-- Right: badges + date -->
@@ -136,25 +134,25 @@
                                                 VerticalAlignment="Center">
 
                                         <Border IsVisible="{Binding HasGitRepo}"
-                                                Background="#8B6FD418"
+                                                Background="{DynamicResource NebulaAccentSurfaceBrush}"
                                                 CornerRadius="3"
                                                 Padding="6,2">
                                             <TextBlock Text="{Binding GitBranch}"
                                                        FontSize="11"
-                                                       Foreground="#8B6FD4"/>
+                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
                                         </Border>
 
-                                        <Border Background="#1C1C21"
+                                        <Border Background="{DynamicResource NebulaSurface2Brush}"
                                                 CornerRadius="3"
                                                 Padding="6,2">
                                             <TextBlock Text="{Binding EngineVersion}"
                                                        FontSize="11"
-                                                       Foreground="#8888A0"/>
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
                                         </Border>
 
                                         <TextBlock Text="{Binding LastOpenedDisplay}"
                                                    FontSize="11"
-                                                   Foreground="#44445A"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
                                                    VerticalAlignment="Center"
                                                    MinWidth="70"/>
 
@@ -175,11 +173,11 @@
                 <TextBlock Text="No projects yet"
                            FontSize="15"
                            FontWeight="Medium"
-                           Foreground="#44445A"
+                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="Create a new project or open an existing folder to get started."
                            FontSize="13"
-                           Foreground="#44445A"
+                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
                            HorizontalAlignment="Center"/>
                 <Button Classes="accent"
                         HorizontalAlignment="Center"
