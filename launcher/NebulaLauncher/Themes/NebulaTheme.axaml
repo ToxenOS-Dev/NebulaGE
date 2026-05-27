@@ -205,6 +205,23 @@
         <Setter Property="Foreground" Value="{DynamicResource NebulaTextBrush}"/>
     </Style>
 
+    <!-- ── Button.project-card — grid-view project card ────── -->
+    <Style Selector="Button.project-card">
+        <Setter Property="Background"      Value="{DynamicResource NebulaSurface2Brush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="8"/>
+        <Setter Property="Padding"         Value="0"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.project-card:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaSurface3Brush}"/>
+    </Style>
+    <Style Selector="Button.project-card:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaSurfaceBrush}"/>
+    </Style>
+
     <!-- ── Button.template-image — full-bleed image card ───
          Provides 2-px border (accent when selected), no internal
          background fill — content is responsible for its own visuals. -->

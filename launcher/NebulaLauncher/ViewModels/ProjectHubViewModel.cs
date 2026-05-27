@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NebulaLauncher.Models;
@@ -24,6 +25,20 @@ public partial class ProjectItemViewModel : ViewModelBase
     public string  EngineVersion     => $"v{Project.EngineVersion}";
     public string  LastOpenedDisplay => FormatDate(Project.LastOpened);
 
+    // Grid-card visuals — first letter + a stable accent tint derived from name
+    public string          Initial   => Name.Length > 0 ? Name[0].ToString().ToUpper() : "?";
+    public SolidColorBrush CardColor { get; }
+
+    private static readonly string[] _cardPalette =
+    [
+        "#408B6FD4",  // purple
+        "#404A8FD4",  // blue
+        "#404AC49A",  // teal
+        "#40D47A4A",  // orange
+        "#40D44A8F",  // pink
+        "#40A04AE8",  // lavender
+    ];
+
     [ObservableProperty] private bool    _hasGitRepo;
     [ObservableProperty] private string? _gitBranch;
 
@@ -38,6 +53,9 @@ public partial class ProjectItemViewModel : ViewModelBase
 
         _hasGitRepo = project.HasGitRepo;
         _gitBranch  = project.GitBranch;
+
+        var idx = Math.Abs(project.Name.GetHashCode()) % _cardPalette.Length;
+        CardColor = new SolidColorBrush(Color.Parse(_cardPalette[idx]));
     }
 
     [RelayCommand] private void Open()   => _onOpen(this);
@@ -90,6 +108,8 @@ public partial class ProjectHubViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(HasProjects))]
     [NotifyPropertyChangedFor(nameof(IsEmpty))]
     [NotifyPropertyChangedFor(nameof(FilteredProjects))]
+    [NotifyPropertyChangedFor(nameof(ShowListView))]
+    [NotifyPropertyChangedFor(nameof(ShowGridView))]
     private ObservableCollection<ProjectItemViewModel> _projects = [];
 
     [ObservableProperty]
@@ -102,11 +122,15 @@ public partial class ProjectHubViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FilteredProjects))]
+    [NotifyPropertyChangedFor(nameof(ShowListView))]
+    [NotifyPropertyChangedFor(nameof(ShowGridView))]
     private bool _isGridView = false;
 
-    public bool HasProjects => Projects.Count > 0;
-    public bool IsEmpty     => FilteredProjects.Count == 0;
-    public bool HasError    => !string.IsNullOrEmpty(ErrorMessage);
+    public bool HasProjects  => Projects.Count > 0;
+    public bool IsEmpty      => FilteredProjects.Count == 0;
+    public bool HasError     => !string.IsNullOrEmpty(ErrorMessage);
+    public bool ShowListView => HasProjects && !IsGridView;
+    public bool ShowGridView => HasProjects && IsGridView;
 
     public ObservableCollection<ProjectItemViewModel> FilteredProjects
     {
@@ -211,5 +235,7 @@ public partial class ProjectHubViewModel : ViewModelBase
         OnPropertyChanged(nameof(HasProjects));
         OnPropertyChanged(nameof(IsEmpty));
         OnPropertyChanged(nameof(FilteredProjects));
+        OnPropertyChanged(nameof(ShowListView));
+        OnPropertyChanged(nameof(ShowGridView));
     }
 }

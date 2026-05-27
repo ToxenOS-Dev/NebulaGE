@@ -141,11 +141,11 @@
             </Grid>
         </Border>
 
-        <!-- ── Project list / empty state ───────────────────── -->
+        <!-- ── Project list / grid / empty state ───────────── -->
         <Panel DockPanel.Dock="Top">
 
-            <!-- List view -->
-            <ScrollViewer IsVisible="{Binding HasProjects}">
+            <!-- ── List view ─────────────────────────────────── -->
+            <ScrollViewer IsVisible="{Binding ShowListView}">
                 <ItemsControl ItemsSource="{Binding FilteredProjects}"
                               Margin="16,12,16,16">
                     <ItemsControl.ItemsPanel>
@@ -219,6 +219,93 @@
                                                    MinWidth="70"/>
                                     </StackPanel>
                                 </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- ── Grid view ─────────────────────────────────── -->
+            <ScrollViewer IsVisible="{Binding ShowGridView}">
+                <ItemsControl ItemsSource="{Binding FilteredProjects}"
+                              Margin="12,12,4,12">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:ProjectItemViewModel">
+                            <Button Classes="project-card"
+                                    Width="196"
+                                    Margin="0,0,8,8"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Stretch"
+                                    Command="{Binding OpenCommand}">
+
+                                <Button.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open"          Command="{Binding OpenCommand}"/>
+                                        <MenuItem Header="Open in IDE"   Command="{Binding OpenInIdeCommand}"/>
+                                        <Separator/>
+                                        <MenuItem Header="Show in Files" Command="{Binding ShowInFilesCommand}"/>
+                                        <Separator/>
+                                        <MenuItem Header="Remove from List" Command="{Binding RemoveCommand}"/>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+
+                                <StackPanel>
+                                    <!-- Coloured header with project initial -->
+                                    <Border Height="68"
+                                            Background="{Binding CardColor}"
+                                            CornerRadius="7,7,0,0">
+                                        <TextBlock Text="{Binding Initial}"
+                                                   FontSize="38" FontWeight="Bold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource NebulaTextBrush}"
+                                                   Opacity="0.18"/>
+                                    </Border>
+
+                                    <!-- Card info -->
+                                    <Border Padding="12,10,12,12">
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Path}"
+                                                   FontSize="10"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                                   TextTrimming="CharacterEllipsis"/>
+
+                                        <!-- Badges + last opened -->
+                                        <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                                            <StackPanel Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        Spacing="4">
+                                                <Border IsVisible="{Binding HasGitRepo}"
+                                                        Background="{DynamicResource NebulaAccentSurfaceBrush}"
+                                                        CornerRadius="3" Padding="5,2">
+                                                    <TextBlock Text="{Binding GitBranch}"
+                                                               FontSize="10"
+                                                               Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                                </Border>
+                                                <Border Background="{DynamicResource NebulaSurface3Brush}"
+                                                        CornerRadius="3" Padding="5,2">
+                                                    <TextBlock Text="{Binding EngineVersion}"
+                                                               FontSize="10"
+                                                               Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding LastOpenedDisplay}"
+                                                       FontSize="10"
+                                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    </Border>
+                                </StackPanel>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
