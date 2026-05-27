@@ -366,6 +366,28 @@
         <Setter Property="IsVisible" Value="True"/>
     </Style>
 
+    <!-- ── Button.theme-chip — preset selector pill ────── -->
+    <Style Selector="Button.theme-chip">
+        <Setter Property="Background"      Value="{DynamicResource NebulaSurface2Brush}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="6"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextMutedBrush}"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+    </Style>
+    <Style Selector="Button.theme-chip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaHoverOverlayBrush}"/>
+    </Style>
+    <!-- Selected: accent border + slightly brighter text -->
+    <Style Selector="Button.theme-chip.selected">
+        <Setter Property="BorderBrush"     Value="{DynamicResource NebulaAccentBrush}"/>
+        <Setter Property="Background"      Value="{DynamicResource NebulaAccentSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource NebulaTextBrush}"/>
+    </Style>
+    <Style Selector="Button.theme-chip.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource NebulaAccentSurface2Brush}"/>
+    </Style>
+
     <!-- ── Button.settings-tab ───────────────────────────── -->
     <Style Selector="Button.settings-tab">
         <Setter Property="Background"      Value="Transparent"/>

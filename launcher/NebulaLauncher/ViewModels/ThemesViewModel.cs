@@ -100,7 +100,10 @@ public partial class PresetOptionViewModel : ViewModelBase
 
     private readonly Action<PresetOptionViewModel> _onSelect;
 
-    public string Name => Preset.Name;
+    public string          Name        => Preset.Name;
+
+    /// <summary>Accent swatch shown on the preset chip so users can see the color at a glance.</summary>
+    public SolidColorBrush AccentBrush => new(ThemePreset.ParseColor(Preset.Accent));
 
     public PresetOptionViewModel(ThemePreset preset, bool isSelected,
                                  Action<PresetOptionViewModel> onSelect)
@@ -197,7 +200,7 @@ public partial class ThemesViewModel : ViewModelBase
 
         Sections.Add(MakeSection("Accent", new[]
         {
-            ("Accent", nameof(ThemePreset.Accent)),
+            ("Accent — buttons & highlights", nameof(ThemePreset.Accent)),
         }));
 
         Sections.Add(MakeSection("Status", new[]

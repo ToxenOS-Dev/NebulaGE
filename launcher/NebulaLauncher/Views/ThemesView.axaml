@@ -23,13 +23,20 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:PresetOptionViewModel">
-                        <Button Classes="template-card"
+                        <Button Classes="theme-chip"
                                 Classes.selected="{Binding IsSelected}"
                                 Command="{Binding SelectCommand}"
                                 Margin="0,0,8,8"
-                                Padding="14,8">
-                            <TextBlock Text="{Binding Name}"
-                                       FontSize="12" FontWeight="Medium"/>
+                                Padding="12,7">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <!-- Accent color swatch dot -->
+                                <Ellipse Width="10" Height="10"
+                                         Fill="{Binding AccentBrush}"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Name}"
+                                           FontSize="12" FontWeight="Medium"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
