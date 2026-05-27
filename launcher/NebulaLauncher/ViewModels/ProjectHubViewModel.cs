@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NebulaLauncher.Models;
@@ -18,12 +20,15 @@ public partial class ProjectItemViewModel : ViewModelBase
     private readonly Action<ProjectItemViewModel> _onOpen;
     private readonly Action<ProjectItemViewModel> _onRemove;
 
-    public string  Name              => Project.Name;
-    public string  Path              => Project.Path;
-    public string  EngineVersion     => $"v{Project.EngineVersion}";
-    public bool    HasGitRepo        => Project.HasGitRepo;
-    public string? GitBranch         => Project.GitBranch;
-    public string  LastOpenedDisplay => FormatDate(Project.LastOpened);
+    // Displayed in the row
+    public string Name              => Project.Name;
+    public string Path              => Project.Path;
+    public string EngineVersion     => $"v{Project.EngineVersion}";
+    public string LastOpenedDisplay => FormatDate(Project.LastOpened);
+
+    // Observable so async git refresh updates the badge without reload
+    [ObservableProperty] private bool    _hasGitRepo;
+    [ObservableProperty] private string? _gitBranch;
 
     public ProjectItemViewModel(
         NebulaProject project,
@@ -33,15 +38,16 @@ public partial class ProjectItemViewModel : ViewModelBase
         Project   = project;
         _onOpen   = onOpen;
         _onRemove = onRemove;
+
+        // Seed from cached registry value — async refresh overwrites later
+        _hasGitRepo = project.HasGitRepo;
+        _gitBranch  = project.GitBranch;
     }
 
     // ── Commands ──────────────────────────────────────────────
 
-    [RelayCommand]
-    private void Open() => _onOpen(this);
-
-    [RelayCommand]
-    private void Remove() => _onRemove(this);
+    [RelayCommand] private void Open()   => _onOpen(this);
+    [RelayCommand] private void Remove() => _onRemove(this);
 
     [RelayCommand]
     private void OpenInIde()
@@ -58,7 +64,7 @@ public partial class ProjectItemViewModel : ViewModelBase
                 UseShellExecute = false,
             });
         }
-        catch { /* IDE not found or failed to launch — TODO: surface error */ }
+        catch { }
     }
 
     [RelayCommand]
@@ -66,7 +72,6 @@ public partial class ProjectItemViewModel : ViewModelBase
     {
         try
         {
-            // xdg-open opens the folder in whatever file manager the DE uses
             Process.Start(new ProcessStartInfo
             {
                 FileName        = "xdg-open",
@@ -74,7 +79,19 @@ public partial class ProjectItemViewModel : ViewModelBase
                 UseShellExecute = false,
             });
         }
-        catch { /* xdg-open unavailable */ }
+        catch { }
+    }
+
+    // ── Git refresh (called from hub on background thread) ────
+
+    /// <summary>Reads git status from disk and updates observable properties.</summary>
+    public void RefreshGitStatus()
+    {
+        var (hasRepo, branch) = GitService.GetStatus(Project.Path);
+        HasGitRepo            = hasRepo;
+        GitBranch             = branch;
+        Project.HasGitRepo    = hasRepo;
+        Project.GitBranch     = branch;
     }
 
     // ── Helpers ───────────────────────────────────────────────
@@ -82,7 +99,6 @@ public partial class ProjectItemViewModel : ViewModelBase
     private static string FormatDate(DateTime dt)
     {
         var diff = DateTime.UtcNow - dt;
-
         return diff.TotalMinutes < 1  ? "Just now"
              : diff.TotalHours   < 1  ? $"{(int)diff.TotalMinutes}m ago"
              : diff.TotalDays    < 1  ? $"{(int)diff.TotalHours}h ago"
@@ -122,37 +138,36 @@ public partial class ProjectHubViewModel : ViewModelBase
 
     // ── Public surface for view code-behind ──────────────────
 
-    /// <summary>Called by the view after NewProjectDialog closes with a project.</summary>
     public void AddProject(NebulaProject project)
     {
         ErrorMessage = null;
 
+        // Detect git status immediately (fast — just reads a file)
+        var (hasRepo, branch) = GitService.GetStatus(project.Path);
+        project.HasGitRepo    = hasRepo;
+        project.GitBranch     = branch;
+
         var existing = Projects.FirstOrDefault(p => p.Project.Path == project.Path);
-        if (existing is not null)
-            Projects.Remove(existing);
+        if (existing is not null) Projects.Remove(existing);
 
         Projects.Insert(0, new ProjectItemViewModel(project, HandleOpen, HandleRemove));
         NotifyListChanged();
     }
 
-    /// <summary>Called by the view after the folder picker resolves a path.</summary>
     public void OpenFromPath(string path)
     {
         var project = _service.Open(path);
-
         if (project is null)
         {
             ErrorMessage = $"No NebulaGE project found in: {path}";
             return;
         }
-
         AddProject(project);
     }
 
     // ── Commands ──────────────────────────────────────────────
 
-    [RelayCommand]
-    private void DismissError() => ErrorMessage = null;
+    [RelayCommand] private void DismissError() => ErrorMessage = null;
 
     // ── Internals ─────────────────────────────────────────────
 
@@ -160,13 +175,35 @@ public partial class ProjectHubViewModel : ViewModelBase
     {
         Projects = new ObservableCollection<ProjectItemViewModel>(
             _registry.Projects.Select(p => new ProjectItemViewModel(p, HandleOpen, HandleRemove)));
+
+        // Refresh git status in background — badges update when done
+        _ = RefreshGitStatusAsync(Projects.ToList());
+    }
+
+    private static async Task RefreshGitStatusAsync(List<ProjectItemViewModel> items)
+    {
+        // Read all .git/HEAD files off the UI thread
+        var statuses = await Task.Run(() =>
+            items.Select(item => (item, GitService.GetStatus(item.Project.Path))).ToList());
+
+        // Apply results back on the UI thread
+        foreach (var (item, (hasRepo, branch)) in statuses)
+            item.RefreshGitStatus();
+
+        // Persist refreshed state to registry
+        if (statuses.Count > 0)
+        {
+            var registry = ProjectRegistry.Load();
+            foreach (var (item, _) in statuses)
+                registry.AddOrUpdate(item.Project);
+        }
     }
 
     private void HandleOpen(ProjectItemViewModel item)
     {
         item.Project.LastOpened = DateTime.UtcNow;
         _registry.AddOrUpdate(item.Project);
-        // TODO: launch editor for item.Project
+        // TODO: launch editor
     }
 
     private void HandleRemove(ProjectItemViewModel item)
@@ -184,6 +221,6 @@ public partial class ProjectHubViewModel : ViewModelBase
 
     partial void OnSearchTextChanged(string value)
     {
-        // TODO: filter projects list against value
+        // TODO: filter list
     }
 }

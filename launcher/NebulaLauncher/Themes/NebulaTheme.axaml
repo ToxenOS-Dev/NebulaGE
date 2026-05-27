@@ -179,6 +179,41 @@
         <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
     </Style>
 
+    <!-- ── Button.ide-row — settings IDE list rows ──────── -->
+    <Style Selector="Button.ide-row">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius"    Value="0"/>
+        <Setter Property="Foreground"      Value="{StaticResource NebulaTextBrush}"/>
+    </Style>
+    <Style Selector="Button.ide-row:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#FFFFFF08"/>
+    </Style>
+    <!-- Selected row: accent tint -->
+    <Style Selector="Button.ide-row.selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+    </Style>
+    <Style Selector="Button.ide-row.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#8B6FD425"/>
+    </Style>
+    <!-- Radio indicator — unselected -->
+    <Style Selector="Button.ide-row Border.radio-outer">
+        <Setter Property="BorderBrush" Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="Background"  Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.ide-row Ellipse.radio-inner">
+        <Setter Property="Fill"       Value="Transparent"/>
+        <Setter Property="IsVisible"  Value="False"/>
+    </Style>
+    <!-- Radio indicator — selected -->
+    <Style Selector="Button.ide-row.selected Border.radio-outer">
+        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.ide-row.selected Ellipse.radio-inner">
+        <Setter Property="Fill"      Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="IsVisible" Value="True"/>
+    </Style>
+
     <!-- ── ContextMenu ───────────────────────────────── -->
     <Style Selector="ContextMenu">
         <Setter Property="Background"       Value="{StaticResource NebulaSurface2Brush}"/>

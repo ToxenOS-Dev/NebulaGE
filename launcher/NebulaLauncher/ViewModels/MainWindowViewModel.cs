@@ -38,7 +38,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             NavItem.Projects => new ProjectHubViewModel(),
             NavItem.Engines  => new StubPageViewModel("Engine Versions", "Engine version management coming soon."),
-            NavItem.Settings => new StubPageViewModel("Settings", "Settings panel coming soon."),
+            NavItem.Settings => new SettingsViewModel(),
             _                => CurrentPage
         };
     }

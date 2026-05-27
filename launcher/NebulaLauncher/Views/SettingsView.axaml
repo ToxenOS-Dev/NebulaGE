@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NebulaLauncher.ViewModels"
+             x:Class="NebulaLauncher.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Background="#0F0F11">
+
+    <ScrollViewer>
+        <StackPanel Margin="28,24" Spacing="0" MaxWidth="640">
+
+            <!-- ── Page title ──────────────────────────────── -->
+            <TextBlock Text="Settings"
+                       FontSize="18" FontWeight="SemiBold"
+                       Foreground="#E2E2E8"
+                       Margin="0,0,0,28"/>
+
+            <!-- ══════════════════════════════════════════════
+                 SECTION: Development Environment
+                 ══════════════════════════════════════════════ -->
+            <TextBlock Text="DEVELOPMENT ENVIRONMENT"
+                       FontSize="10" FontWeight="Medium"
+                       Foreground="#44445A"
+                       LetterSpacing="1.2"
+                       Margin="0,0,0,14"/>
+
+            <!-- Preferred IDE -->
+            <StackPanel Spacing="6" Margin="0,0,0,24">
+                <TextBlock Text="Preferred IDE"
+                           FontSize="13" FontWeight="Medium"
+                           Foreground="#E2E2E8"/>
+                <TextBlock Text="Used when opening a project from the launcher or via Open in IDE."
+                           FontSize="12" Foreground="#8888A0"
+                           Margin="0,0,0,10"/>
+
+                <!-- IDE list -->
+                <Border IsVisible="{Binding !NoIdesFound}"
+                        Background="#16161A"
+                        BorderBrush="#2A2A30"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                    <ItemsControl ItemsSource="{Binding DetectedIdes}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="0"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:IdeOptionViewModel">
+                                <Button Classes="ide-row"
+                                        Classes.selected="{Binding IsSelected}"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Command="{Binding SelectCommand}"
+                                        Padding="14,11">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                        <!-- Radio indicator -->
+                                        <Border Grid.Column="0"
+                                                Width="16" Height="16"
+                                                CornerRadius="8"
+                                                BorderThickness="1.5"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,12,0"
+                                                Classes="radio-outer">
+                                            <Ellipse Width="8" Height="8"
+                                                     Classes="radio-inner"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <!-- Name -->
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   FontSize="13" FontWeight="Medium"
+                                                   VerticalAlignment="Center"/>
+
+                                        <!-- Path -->
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding ExePath}"
+                                                   FontSize="11"
+                                                   Foreground="#44445A"
+                                                   VerticalAlignment="Center"
+                                                   Margin="16,0,0,0"/>
+
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!-- No IDEs found -->
+                <Border IsVisible="{Binding NoIdesFound}"
+                        Background="#16161A"
+                        BorderBrush="#2A2A30"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="16,14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="No IDEs detected"
+                                   FontSize="13" FontWeight="Medium"
+                                   Foreground="#8888A0"/>
+                        <TextBlock FontSize="12" Foreground="#44445A"
+                                   TextWrapping="Wrap">
+                            Install VS Code, VSCodium, Rider, CLion, Neovim, or Emacs
+                            and restart NebulaGE to detect it automatically.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Divider -->
+            <Border Height="1" Background="#2A2A30" Margin="0,0,0,24"/>
+
+            <!-- ══════════════════════════════════════════════
+                 SECTION: Projects
+                 ══════════════════════════════════════════════ -->
+            <TextBlock Text="PROJECTS"
+                       FontSize="10" FontWeight="Medium"
+                       Foreground="#44445A"
+                       LetterSpacing="1.2"
+                       Margin="0,0,0,14"/>
+
+            <!-- Default project location -->
+            <StackPanel Spacing="6" Margin="0,0,0,8">
+                <TextBlock Text="Default Project Location"
+                           FontSize="13" FontWeight="Medium"
+                           Foreground="#E2E2E8"/>
+                <TextBlock Text="Where new projects are created by default."
+                           FontSize="12" Foreground="#8888A0"
+                           Margin="0,0,0,6"/>
+                <Grid ColumnDefinitions="*,8,Auto">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding DefaultProjectLocation}"/>
+                    <Button Grid.Column="2"
+                            Content="Browse"
+                            MinWidth="72"
+                            Click="OnBrowseLocation"/>
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

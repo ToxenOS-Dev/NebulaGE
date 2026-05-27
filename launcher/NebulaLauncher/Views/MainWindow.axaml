@@ -113,6 +113,10 @@
                     <views:ProjectHubView/>
                 </DataTemplate>
 
+                <DataTemplate DataType="vm:SettingsViewModel">
+                    <views:SettingsView/>
+                </DataTemplate>
+
                 <DataTemplate DataType="vm:StubPageViewModel">
                     <Grid>
                         <StackPanel HorizontalAlignment="Center"
