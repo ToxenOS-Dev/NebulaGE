@@ -32,4 +32,9 @@ public class LauncherSettings
     /// <summary>Glass/frosted surfaces on toolbar and cards.</summary>
     [JsonPropertyName("glassSurfacesEnabled")]
     public bool GlassSurfacesEnabled { get; set; } = false;
+
+    // ── Project hub view mode ─────────────────────────────────────────────────
+    /// <summary>True = grid card view; false = compact list view.</summary>
+    [JsonPropertyName("projectGridView")]
+    public bool ProjectGridView { get; set; } = false;
 }

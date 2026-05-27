@@ -124,7 +124,10 @@ public partial class ProjectHubViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(FilteredProjects))]
     [NotifyPropertyChangedFor(nameof(ShowListView))]
     [NotifyPropertyChangedFor(nameof(ShowGridView))]
-    private bool _isGridView = false;
+    private bool _isGridView;
+
+    partial void OnIsGridViewChanged(bool value) =>
+        SettingsService.Update(s => s.ProjectGridView = value);
 
     public bool HasProjects  => Projects.Count > 0;
     public bool IsEmpty      => FilteredProjects.Count == 0;
@@ -149,7 +152,8 @@ public partial class ProjectHubViewModel : ViewModelBase
 
     public ProjectHubViewModel()
     {
-        _registry = ProjectRegistry.Load();
+        _registry   = ProjectRegistry.Load();
+        _isGridView = SettingsService.Load().ProjectGridView;
         ReloadProjects();
     }
 
