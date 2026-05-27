@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NebulaLauncher</RootNamespace>
+    <AssemblyName>NebulaLauncher</AssemblyName>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia"                  Version="11.2.1" />
+    <PackageReference Include="Avalonia.Desktop"          Version="11.2.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent"    Version="11.2.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter"      Version="11.2.1" />
+    <PackageReference Include="Avalonia.ReactiveUI"       Version="11.2.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm"     Version="8.3.2"  />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/**" />
+    <AvaloniaResource Include="Themes/**" />
+  </ItemGroup>
+
+</Project>

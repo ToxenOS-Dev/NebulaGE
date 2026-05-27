@@ -1,0 +1,68 @@
+# ============================================================
+#  NebulaGE — root .gitignore
+# ============================================================
+
+# ── C# / .NET ───────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/settings.json
+.vscode/*.code-workspace
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!**/packages/repositories.config
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# ── C++ ─────────────────────────────────────────────────────
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.a
+*.so
+*.so.*
+*.out
+*.elf
+compile_commands.json
+
+# ── Zig ─────────────────────────────────────────────────────
+zig-cache/
+zig-out/
+
+# ── Vulkan / Shaders ────────────────────────────────────────
+*.spv
+
+# ── NebulaGE Runtime ────────────────────────────────────────
+.nebula-cache/
+*.nebula-lock
+
+# ── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.directory
+
+# ── Logs / Temp ─────────────────────────────────────────────
+*.log
+*.tmp
+*.temp

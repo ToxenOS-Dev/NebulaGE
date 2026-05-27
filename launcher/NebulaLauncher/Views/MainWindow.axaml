@@ -1,0 +1,132 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NebulaLauncher.ViewModels"
+        xmlns:views="using:NebulaLauncher.Views"
+        x:Class="NebulaLauncher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="NebulaGE"
+        Width="1060" Height="700"
+        MinWidth="820" MinHeight="560"
+        Background="#0F0F11">
+
+    <Grid ColumnDefinitions="200,*">
+
+        <!-- ── Sidebar ──────────────────────────────────────── -->
+        <Border Grid.Column="0"
+                Background="#16161A"
+                BorderBrush="#2A2A30"
+                BorderThickness="0,0,1,0">
+            <DockPanel>
+
+                <!-- Brand -->
+                <Border DockPanel.Dock="Top"
+                        Padding="16,20,16,16"
+                        BorderBrush="#2A2A30"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="NebulaGE"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="#E2E2E8"/>
+                        <TextBlock Text="v0.1.0"
+                                   FontSize="11"
+                                   Foreground="#44445A"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Settings pinned to bottom -->
+                <Border DockPanel.Dock="Bottom"
+                        Padding="8"
+                        BorderBrush="#2A2A30"
+                        BorderThickness="0,1,0,0">
+                    <Button Classes="ghost"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="8,7"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:NavItem.Settings}">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <TextBlock Text="⚙"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8888A0"/>
+                            <TextBlock Text="Settings"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8888A0"/>
+                        </StackPanel>
+                    </Button>
+                </Border>
+
+                <!-- Nav items -->
+                <StackPanel DockPanel.Dock="Top"
+                            Spacing="2"
+                            Margin="8,12,8,0">
+
+                    <Button Classes="ghost"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="8,7"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:NavItem.Projects}">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <TextBlock Text="⬡"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8B6FD4"/>
+                            <TextBlock Text="Projects"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Classes="ghost"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Padding="8,7"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{x:Static vm:NavItem.Engines}">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <TextBlock Text="◈"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8888A0"/>
+                            <TextBlock Text="Engine Versions"
+                                       VerticalAlignment="Center"
+                                       Foreground="#8888A0"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ── Content area ─────────────────────────────────── -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding CurrentPage}">
+            <ContentControl.DataTemplates>
+
+                <DataTemplate DataType="vm:ProjectHubViewModel">
+                    <views:ProjectHubView/>
+                </DataTemplate>
+
+                <DataTemplate DataType="vm:StubPageViewModel">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="8">
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding Message}"
+                                       Foreground="#8888A0"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+
+            </ContentControl.DataTemplates>
+        </ContentControl>
+
+    </Grid>
+</Window>

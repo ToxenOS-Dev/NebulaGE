@@ -1,0 +1,142 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ══════════════════════════════════════════════════
+         NebulaGE Color Palette
+         Dark, professional, muted — purple accents only.
+         ══════════════════════════════════════════════════ -->
+    <Styles.Resources>
+
+        <!-- Backgrounds -->
+        <Color x:Key="NebulaBg">#0F0F11</Color>
+        <Color x:Key="NebulaSurface">#16161A</Color>
+        <Color x:Key="NebulaSurface2">#1C1C21</Color>
+        <Color x:Key="NebulaSurface3">#222228</Color>
+
+        <!-- Borders -->
+        <Color x:Key="NebulaBorder">#2A2A30</Color>
+        <Color x:Key="NebulaBorderSubtle">#1F1F24</Color>
+
+        <!-- Text -->
+        <Color x:Key="NebulaText">#E2E2E8</Color>
+        <Color x:Key="NebulaTextMuted">#8888A0</Color>
+        <Color x:Key="NebulaTextSubtle">#44445A</Color>
+
+        <!-- Accent — Nebula Purple -->
+        <Color x:Key="NebulaAccent">#8B6FD4</Color>
+        <Color x:Key="NebulaAccentHover">#9D82E2</Color>
+        <Color x:Key="NebulaAccentPressed">#7A5EC3</Color>
+
+        <!-- Semantic -->
+        <Color x:Key="NebulaSuccess">#4CAF7D</Color>
+        <Color x:Key="NebulaWarning">#E8A838</Color>
+        <Color x:Key="NebulaError">#E05C5C</Color>
+
+        <!-- Git status colors -->
+        <Color x:Key="NebulaGitModified">#E8A838</Color>
+        <Color x:Key="NebulaGitNew">#4CAF7D</Color>
+        <Color x:Key="NebulaGitDeleted">#E05C5C</Color>
+        <Color x:Key="NebulaGitConflict">#E05C5C</Color>
+
+        <!-- Brushes -->
+        <SolidColorBrush x:Key="NebulaBgBrush"           Color="{StaticResource NebulaBg}"/>
+        <SolidColorBrush x:Key="NebulaSurfaceBrush"      Color="{StaticResource NebulaSurface}"/>
+        <SolidColorBrush x:Key="NebulaSurface2Brush"     Color="{StaticResource NebulaSurface2}"/>
+        <SolidColorBrush x:Key="NebulaSurface3Brush"     Color="{StaticResource NebulaSurface3}"/>
+        <SolidColorBrush x:Key="NebulaBorderBrush"       Color="{StaticResource NebulaBorder}"/>
+        <SolidColorBrush x:Key="NebulaTextBrush"         Color="{StaticResource NebulaText}"/>
+        <SolidColorBrush x:Key="NebulaTextMutedBrush"    Color="{StaticResource NebulaTextMuted}"/>
+        <SolidColorBrush x:Key="NebulaTextSubtleBrush"   Color="{StaticResource NebulaTextSubtle}"/>
+        <SolidColorBrush x:Key="NebulaAccentBrush"       Color="{StaticResource NebulaAccent}"/>
+        <SolidColorBrush x:Key="NebulaSuccessBrush"      Color="{StaticResource NebulaSuccess}"/>
+        <SolidColorBrush x:Key="NebulaWarningBrush"      Color="{StaticResource NebulaWarning}"/>
+        <SolidColorBrush x:Key="NebulaErrorBrush"        Color="{StaticResource NebulaError}"/>
+
+        <!-- Accent surface (for badges, highlights) -->
+        <SolidColorBrush x:Key="NebulaAccentSurfaceBrush" Color="#8B6FD418"/>
+
+    </Styles.Resources>
+
+    <!-- ── Window ─────────────────────────────────────── -->
+    <Style Selector="Window">
+        <Setter Property="Background"  Value="{StaticResource NebulaBgBrush}"/>
+        <Setter Property="FontFamily"  Value="Inter,Segoe UI,system-ui,sans-serif"/>
+        <Setter Property="FontSize"    Value="13"/>
+        <Setter Property="Foreground"  Value="{StaticResource NebulaTextBrush}"/>
+    </Style>
+
+    <!-- ── TextBlock ──────────────────────────────────── -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
+    </Style>
+
+    <!-- ── TextBox ────────────────────────────────────── -->
+    <Style Selector="TextBox">
+        <Setter Property="Background"       Value="{StaticResource NebulaSurfaceBrush}"/>
+        <Setter Property="Foreground"       Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"      Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness"  Value="1"/>
+        <Setter Property="CornerRadius"     Value="4"/>
+        <Setter Property="Padding"          Value="8,6"/>
+        <Setter Property="FontSize"         Value="13"/>
+        <Setter Property="CaretBrush"       Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="SelectionBrush"   Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+    </Style>
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{StaticResource NebulaAccentBrush}"/>
+    </Style>
+
+    <!-- ── Button — base ─────────────────────────────── -->
+    <Style Selector="Button">
+        <Setter Property="Background"       Value="{StaticResource NebulaSurface2Brush}"/>
+        <Setter Property="Foreground"       Value="{StaticResource NebulaTextBrush}"/>
+        <Setter Property="BorderBrush"      Value="{StaticResource NebulaBorderBrush}"/>
+        <Setter Property="BorderThickness"  Value="1"/>
+        <Setter Property="CornerRadius"     Value="4"/>
+        <Setter Property="Padding"          Value="12,6"/>
+        <Setter Property="FontSize"         Value="13"/>
+        <Setter Property="Cursor"           Value="Hand"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaSurface3Brush}"/>
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaSurfaceBrush}"/>
+    </Style>
+
+    <!-- ── Button.accent — filled purple ─────────────── -->
+    <Style Selector="Button.accent">
+        <Setter Property="Background"      Value="{StaticResource NebulaAccentBrush}"/>
+        <Setter Property="Foreground"      Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaAccentHover}"/>
+    </Style>
+    <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource NebulaAccentPressed}"/>
+    </Style>
+
+    <!-- ── Button.ghost — transparent background ─────── -->
+    <Style Selector="Button.ghost">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#FFFFFF0D"/>
+    </Style>
+    <Style Selector="Button.ghost:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#FFFFFF06"/>
+    </Style>
+
+    <!-- ── ScrollViewer ───────────────────────────────── -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- ── ScrollBar ──────────────────────────────────── -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+</Styles>
