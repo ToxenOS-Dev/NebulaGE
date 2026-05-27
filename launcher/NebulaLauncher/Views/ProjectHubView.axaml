@@ -26,10 +26,10 @@
                             Orientation="Horizontal"
                             Spacing="8">
                     <Button Classes="accent"
-                            Command="{Binding NewProjectCommand}">
+                            Click="OnNewProject">
                         + New Project
                     </Button>
-                    <Button Command="{Binding OpenFromDiskCommand}">
+                    <Button Click="OnOpenFromDisk">
                         Open Folder
                     </Button>
                 </StackPanel>
@@ -140,7 +140,7 @@
                 <Button Classes="accent"
                         HorizontalAlignment="Center"
                         Margin="0,10,0,0"
-                        Command="{Binding NewProjectCommand}">
+                        Click="OnNewProject">
                     + New Project
                 </Button>
             </StackPanel>

@@ -40,6 +40,7 @@
                         BorderBrush="#2A2A30"
                         BorderThickness="0,1,0,0">
                     <Button Classes="ghost"
+                            Classes.active="{Binding IsSettingsSelected}"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Left"
                             Padding="8,7"
@@ -47,12 +48,12 @@
                             CommandParameter="{x:Static vm:NavItem.Settings}">
                         <StackPanel Orientation="Horizontal" Spacing="9">
                             <TextBlock Text="⚙"
+                                       Classes="nav-icon"
                                        FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Foreground="#8888A0"/>
+                                       VerticalAlignment="Center"/>
                             <TextBlock Text="Settings"
-                                       VerticalAlignment="Center"
-                                       Foreground="#8888A0"/>
+                                       Classes="nav-label"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Border>
@@ -63,6 +64,7 @@
                             Margin="8,12,8,0">
 
                     <Button Classes="ghost"
+                            Classes.active="{Binding IsProjectsSelected}"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Left"
                             Padding="8,7"
@@ -70,15 +72,17 @@
                             CommandParameter="{x:Static vm:NavItem.Projects}">
                         <StackPanel Orientation="Horizontal" Spacing="9">
                             <TextBlock Text="⬡"
+                                       Classes="nav-icon"
                                        FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Foreground="#8B6FD4"/>
+                                       VerticalAlignment="Center"/>
                             <TextBlock Text="Projects"
+                                       Classes="nav-label"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <Button Classes="ghost"
+                            Classes.active="{Binding IsEnginesSelected}"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Left"
                             Padding="8,7"
@@ -86,12 +90,12 @@
                             CommandParameter="{x:Static vm:NavItem.Engines}">
                         <StackPanel Orientation="Horizontal" Spacing="9">
                             <TextBlock Text="◈"
+                                       Classes="nav-icon"
                                        FontSize="13"
-                                       VerticalAlignment="Center"
-                                       Foreground="#8888A0"/>
+                                       VerticalAlignment="Center"/>
                             <TextBlock Text="Engine Versions"
-                                       VerticalAlignment="Center"
-                                       Foreground="#8888A0"/>
+                                       Classes="nav-label"
+                                       VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 

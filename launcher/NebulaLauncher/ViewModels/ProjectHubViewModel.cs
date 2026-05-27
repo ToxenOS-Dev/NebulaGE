@@ -77,18 +77,28 @@ public partial class ProjectHubViewModel : ViewModelBase
         ReloadProjects();
     }
 
-    // ── Commands ──────────────────────────────────────────────
+    // ── Public surface for view code-behind ──────────────────
 
-    [RelayCommand]
-    private void NewProject()
+    /// <summary>Called by the view after NewProjectDialog closes with a project.</summary>
+    public void AddProject(NebulaProject project)
     {
-        // TODO: open NewProjectDialog
+        // Avoid duplicates (e.g. user created the same path twice)
+        var existing = Projects.FirstOrDefault(p => p.Project.Path == project.Path);
+        if (existing is not null)
+            Projects.Remove(existing);
+
+        var item = new ProjectItemViewModel(project, HandleOpen, HandleRemove);
+        Projects.Insert(0, item);
+        NotifyListChanged();
     }
 
-    [RelayCommand]
-    private void OpenFromDisk()
+    /// <summary>Called by the view after the folder picker resolves a path.</summary>
+    public void OpenFromPath(string path)
     {
-        // TODO: open folder picker, then call _service.Open(path)
+        var project = _service.Open(path);
+        if (project is null) return; // not a valid nebula project — TODO: show inline error
+
+        AddProject(project);
     }
 
     // ── Internals ─────────────────────────────────────────────
@@ -114,6 +124,11 @@ public partial class ProjectHubViewModel : ViewModelBase
     {
         _registry.Remove(item.Project);
         Projects.Remove(item);
+        NotifyListChanged();
+    }
+
+    private void NotifyListChanged()
+    {
         OnPropertyChanged(nameof(HasProjects));
         OnPropertyChanged(nameof(IsEmpty));
     }

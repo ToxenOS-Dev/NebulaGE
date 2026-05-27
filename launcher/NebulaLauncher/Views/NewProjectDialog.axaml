@@ -1,0 +1,124 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NebulaLauncher.ViewModels"
+        x:Class="NebulaLauncher.Views.NewProjectDialog"
+        x:DataType="vm:NewProjectDialogViewModel"
+        Title="New Project"
+        Width="480" Height="390"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#0F0F11"
+        FontFamily="Inter,Segoe UI,system-ui,sans-serif"
+        FontSize="13">
+
+    <DockPanel Margin="24,20,24,24">
+
+        <!-- ── Title ─────────────────────────────────────────── -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="New Project"
+                   FontSize="16"
+                   FontWeight="SemiBold"
+                   Foreground="#E2E2E8"
+                   Margin="0,0,0,22"/>
+
+        <!-- ── Buttons ───────────────────────────────────────── -->
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Content="Cancel"
+                    MinWidth="80"
+                    Click="OnCancel"/>
+            <Button Classes="accent"
+                    Content="+ Create Project"
+                    MinWidth="128"
+                    IsEnabled="{Binding CanCreate}"
+                    Click="OnCreate"/>
+        </StackPanel>
+
+        <!-- ── Form ──────────────────────────────────────────── -->
+        <StackPanel DockPanel.Dock="Top" Spacing="18">
+
+            <!-- Project Name -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Project Name"
+                           FontSize="11"
+                           FontWeight="Medium"
+                           Foreground="#8888A0"/>
+                <TextBox Text="{Binding ProjectName}"
+                         Watermark="MyGame"
+                         x:Name="NameInput"/>
+            </StackPanel>
+
+            <!-- Location -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Location"
+                           FontSize="11"
+                           FontWeight="Medium"
+                           Foreground="#8888A0"/>
+                <Grid ColumnDefinitions="*,8,Auto">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding Location}"/>
+                    <Button Grid.Column="2"
+                            Content="Browse"
+                            MinWidth="72"
+                            Click="OnBrowseLocation"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- Template -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Template"
+                           FontSize="11"
+                           FontWeight="Medium"
+                           Foreground="#8888A0"/>
+                <ItemsControl ItemsSource="{x:Static vm:NewProjectDialogViewModel.AvailableTemplates}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:TemplateOption">
+                            <Button Classes="ghost"
+                                    Padding="12,8"
+                                    CornerRadius="4"
+                                    IsEnabled="{Binding Id,
+                                        Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                    Click="OnSelectTemplate"
+                                    Tag="{Binding}">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding Label}"
+                                               FontSize="12"
+                                               FontWeight="Medium"
+                                               Foreground="#E2E2E8"/>
+                                    <TextBlock Text="{Binding Description}"
+                                               FontSize="10"
+                                               Foreground="#44445A"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Path preview -->
+            <Border Background="#16161A"
+                    CornerRadius="4"
+                    Padding="12,9">
+                <StackPanel Spacing="3">
+                    <TextBlock Text="Will be created at"
+                               FontSize="10"
+                               Foreground="#44445A"/>
+                    <TextBlock Text="{Binding FullPath}"
+                               FontSize="12"
+                               Foreground="#8888A0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+
+    </DockPanel>
+
+</Window>

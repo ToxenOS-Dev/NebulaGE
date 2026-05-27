@@ -129,6 +129,28 @@
         <Setter Property="Background" Value="#FFFFFF06"/>
     </Style>
 
+    <!-- ── Nav items — inactive default ─────────────────── -->
+    <Style Selector="TextBlock.nav-icon">
+        <Setter Property="Foreground" Value="{StaticResource NebulaTextMutedBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.nav-label">
+        <Setter Property="Foreground" Value="{StaticResource NebulaTextMutedBrush}"/>
+    </Style>
+
+    <!-- ── Nav items — active (accent highlight) ─────────── -->
+    <Style Selector="Button.ghost.active">
+        <Setter Property="Background" Value="{StaticResource NebulaAccentSurfaceBrush}"/>
+    </Style>
+    <Style Selector="Button.ghost.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#8B6FD425"/>
+    </Style>
+    <Style Selector="Button.ghost.active TextBlock.nav-icon">
+        <Setter Property="Foreground" Value="{StaticResource NebulaAccentBrush}"/>
+    </Style>
+    <Style Selector="Button.ghost.active TextBlock.nav-label">
+        <Setter Property="Foreground" Value="{StaticResource NebulaTextBrush}"/>
+    </Style>
+
     <!-- ── ScrollViewer ───────────────────────────────── -->
     <Style Selector="ScrollViewer">
         <Setter Property="Background" Value="Transparent"/>
