@@ -24,11 +24,14 @@ public partial class GitHubSessionViewModel : ViewModelBase
     /// <summary>True while a gh CLI command is running.</summary>
     [ObservableProperty] private bool _isBusy;
 
-    /// <summary>Set to true after Login fires — prompts user to return from browser.</summary>
-    [ObservableProperty] private bool _awaitingBrowserAuth;
+    /// <summary>True while the browser OAuth flow is in progress.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LoginButtonLabel))]
+    private bool _awaitingBrowserAuth;
 
-    public bool HasUser => User is not null;
-    public bool NoUser  => User is null;
+    public bool   HasUser         => User is not null;
+    public bool   NoUser          => User is null;
+    public string LoginButtonLabel => AwaitingBrowserAuth ? "Connecting…" : "Connect GitHub";
 
     private GitHubSessionViewModel()
     {
@@ -38,26 +41,37 @@ public partial class GitHubSessionViewModel : ViewModelBase
     // ── Commands ──────────────────────────────────────────────
 
     /// <summary>
-    /// Starts <c>gh auth login --web</c> (opens browser for OAuth flow).
-    /// The process is non-blocking; user completes auth in the browser,
-    /// then clicks Refresh.
+    /// Runs <c>gh auth login --web</c>, which auto-opens the browser OAuth flow.
+    /// Awaits the process — gh exits once authentication completes — then
+    /// refreshes the user automatically. No manual "Refresh" click needed.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanLogin))]
-    private void Login()
+    private async Task Login()
     {
+        IsBusy = true;
+        AwaitingBrowserAuth = true;
         try
         {
-            Process.Start(new ProcessStartInfo("gh", "auth login --web --git-protocol https")
+            using var proc = Process.Start(new ProcessStartInfo(
+                "gh", "auth login --web --git-protocol https")
             {
-                UseShellExecute = false,
-                CreateNoWindow  = true,
+                UseShellExecute        = false,
+                CreateNoWindow         = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError  = true,
             });
-            AwaitingBrowserAuth = true;
+
+            if (proc is not null)
+                await proc.WaitForExitAsync();
         }
         catch
         {
-            // gh not installed — nothing to do; UI shows NoUser state
+            // gh not installed or launch failed — fall through to Refresh
         }
+
+        AwaitingBrowserAuth = false;
+        User   = GitHubService.GetAuthenticatedUser();
+        IsBusy = false;
     }
 
     private bool CanLogin() => !IsBusy && NoUser;

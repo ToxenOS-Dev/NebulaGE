@@ -220,26 +220,13 @@
                                            TextWrapping="Wrap"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal"
-                                        Spacing="6"
-                                        VerticalAlignment="Center"
-                                        Margin="12,0,0,0">
-                                <!-- Refresh (shown while awaiting browser auth) -->
-                                <Button IsVisible="{Binding GitHub.AwaitingBrowserAuth}"
-                                        Padding="12,6"
-                                        Command="{Binding GitHub.RefreshCommand}">
-                                    Refresh
-                                </Button>
-                                <!-- Connect -->
-                                <Button Classes="accent"
-                                        Padding="12,6"
-                                        IsEnabled="{Binding !GitHub.IsBusy}"
-                                        IsVisible="{Binding !GitHub.AwaitingBrowserAuth}"
-                                        Command="{Binding GitHub.LoginCommand}">
-                                    Connect GitHub
-                                </Button>
-                            </StackPanel>
+                            <Button Classes="accent"
+                                    Padding="12,6"
+                                    VerticalAlignment="Center"
+                                    Margin="12,0,0,0"
+                                    IsEnabled="{Binding !GitHub.IsBusy}"
+                                    Command="{Binding GitHub.LoginCommand}"
+                                    Content="{Binding GitHub.LoginButtonLabel}"/>
                         </Grid>
                     </Border>
 
