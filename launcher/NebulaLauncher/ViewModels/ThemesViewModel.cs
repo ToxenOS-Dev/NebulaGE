@@ -50,9 +50,9 @@ public partial class ColorEntryViewModel : ViewModelBase
 
     partial void OnHexInputChanged(string value)
     {
-        if (_syncing) return;
+        if (_syncing || string.IsNullOrWhiteSpace(value)) return;
         var normalized = NormalizeHex(value);
-        if (Color.TryParse(normalized, out var c))
+        if (normalized.Length > 0 && Color.TryParse(normalized, out var c))
         {
             _syncing = true;
             Color        = c;
@@ -75,9 +75,10 @@ public partial class ColorEntryViewModel : ViewModelBase
     private static string ColorToHex(Color c) =>
         $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
-    private static string NormalizeHex(string s)
+    private static string NormalizeHex(string? s)
     {
-        s = s.Trim();
+        s = s?.Trim();
+        if (string.IsNullOrEmpty(s)) return string.Empty;
         if (!s.StartsWith('#')) s = "#" + s;
         return s;
     }
