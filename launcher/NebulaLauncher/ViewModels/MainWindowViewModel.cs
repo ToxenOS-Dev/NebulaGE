@@ -30,6 +30,9 @@ public partial class MainWindowViewModel : ViewModelBase
     /// <summary>Singleton shared with the Settings page so login/logout updates the sidebar live.</summary>
     public GitHubSessionViewModel GitHub => GitHubSessionViewModel.Current;
 
+    // ── Download tray ─────────────────────────────────────────
+    public DownloadManagerViewModel Downloads => DownloadManagerViewModel.Current;
+
     public MainWindowViewModel()
     {
         _currentPage = new ProjectHubViewModel();

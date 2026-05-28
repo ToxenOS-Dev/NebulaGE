@@ -174,6 +174,14 @@ public partial class ProjectHubViewModel : ViewModelBase
         _registry   = ProjectRegistry.Load();
         _isGridView = SettingsService.Load().ProjectGridView;
         ReloadProjects();
+
+        // Auto-add cloned projects when the download tray finishes a clone
+        DownloadManagerViewModel.Current.CloneCompleted += AddProject;
+    }
+
+    ~ProjectHubViewModel()
+    {
+        DownloadManagerViewModel.Current.CloneCompleted -= AddProject;
     }
 
     // ── Public API for code-behind ────────────────────────────

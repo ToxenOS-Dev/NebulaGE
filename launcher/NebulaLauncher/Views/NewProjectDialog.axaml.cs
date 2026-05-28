@@ -1,12 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
-using NebulaLauncher.Models;
 using NebulaLauncher.Services;
 using NebulaLauncher.ViewModels;
 
@@ -75,63 +72,19 @@ public partial class NewProjectDialog : Window
     }
 
     // ── Clone from GitHub ─────────────────────────────────────
+    // Hands the clone off to the global DownloadManagerViewModel tray and
+    // closes the dialog immediately — no waiting, no blocking.
 
-    private async Task CloneAndClose(NewProjectDialogViewModel vm)
+    private Task CloneAndClose(NewProjectDialogViewModel vm)
     {
         var cloneUrl = NewProjectDialogViewModel.NormalizeCloneUrl(vm.CloneUrl) ?? vm.CloneUrl.Trim();
-        var dest     = Path.Combine(vm.Location, vm.ProjectName.Trim());
+        var name     = vm.ProjectName.Trim();
+        var dest     = Path.Combine(vm.Location, name);
 
-        vm.ErrorMessage = null;
-        vm.IsBusy       = true;
+        DownloadManagerViewModel.Current.StartClone(name, cloneUrl, dest, vm.Location);
 
-        string? stderr = null;
-        try
-        {
-            Directory.CreateDirectory(vm.Location);
-
-            using var proc = Process.Start(new ProcessStartInfo(
-                "git", $"clone \"{cloneUrl}\" \"{dest}\"")
-            {
-                UseShellExecute        = false,
-                CreateNoWindow         = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError  = true,
-            });
-
-            if (proc is not null)
-            {
-                stderr = await proc.StandardError.ReadToEndAsync();
-                await proc.WaitForExitAsync();
-            }
-
-            if (proc?.ExitCode == 0 && Directory.Exists(dest))
-            {
-                var project = new NebulaProject
-                {
-                    Name       = vm.ProjectName.Trim(),
-                    Path       = dest,
-                    GitHubUrl  = NewProjectDialogViewModel.NormalizeCloneUrl(vm.CloneUrl),
-                    Created    = DateTime.UtcNow,
-                    LastOpened = DateTime.UtcNow,
-                };
-                await Dispatcher.UIThread.InvokeAsync(() => Close(project));
-                return;
-            }
-
-            // Clone failed — surface the git stderr
-            var hint = string.IsNullOrWhiteSpace(stderr)
-                ? "Check the URL and your internet connection."
-                : stderr.Trim();
-            vm.ErrorMessage = $"Clone failed: {hint}";
-        }
-        catch (Exception ex)
-        {
-            vm.ErrorMessage = $"Clone error: {ex.Message}";
-        }
-        finally
-        {
-            vm.IsBusy = false;
-        }
+        Close(null);   // dialog closes; tray handles the rest
+        return Task.CompletedTask;
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) =>

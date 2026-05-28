@@ -314,8 +314,9 @@
             </Panel>
 
             <!-- ── Content area ──────────────────────────────── -->
-            <ContentControl Grid.Column="1"
-                            Content="{Binding CurrentPage}">
+            <Panel Grid.Column="1">
+
+            <ContentControl Content="{Binding CurrentPage}">
                 <ContentControl.DataTemplates>
 
                     <DataTemplate DataType="vm:ProjectHubViewModel">
@@ -348,6 +349,133 @@
 
                 </ContentControl.DataTemplates>
             </ContentControl>
+
+            <!-- ── Download tray ─────────────────────────── -->
+            <!--
+                Floats at the bottom of the content column (not the sidebar).
+                Visible only when there are active or recently-completed downloads.
+            -->
+            <Border VerticalAlignment="Bottom"
+                    IsVisible="{Binding Downloads.HasDownloads}"
+                    Background="{DynamicResource NebulaSurface2Brush}"
+                    BorderBrush="{DynamicResource NebulaBorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    BoxShadow="0 -4 20 0 #44000000"
+                    Padding="0,0,0,0">
+                <StackPanel>
+
+                    <!-- Header row -->
+                    <Border Padding="16,8,16,8"
+                            BorderBrush="{DynamicResource NebulaBorderBrush}"
+                            BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <!-- Down-arrow icon -->
+                            <Path Width="11" Height="11"
+                                  VerticalAlignment="Center"
+                                  Stretch="Uniform"
+                                  Fill="{DynamicResource NebulaAccentBrush}"
+                                  Data="M 5,0 L 5,8 M 1,4 L 5,8 L 9,4"/>
+                            <TextBlock Text="Downloads"
+                                       FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Download rows -->
+                    <ItemsControl ItemsSource="{Binding Downloads.Downloads}"
+                                  Margin="0,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:DownloadItemViewModel">
+                                <Border Padding="16,10"
+                                        BorderBrush="{DynamicResource NebulaBorderSubtleBrush}"
+                                        BorderThickness="0,0,0,1">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                        <!-- Status icon: ↓ while active, ✓ done, ✕ failed -->
+                                        <Panel Grid.Column="0"
+                                               Width="18"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0">
+                                            <TextBlock Text="↓" FontSize="13"
+                                                       IsVisible="{Binding IsActive}"
+                                                       Foreground="{DynamicResource NebulaAccentBrush}"
+                                                       HorizontalAlignment="Center"/>
+                                            <TextBlock Text="✓" FontSize="13"
+                                                       IsVisible="{Binding IsComplete}"
+                                                       Foreground="{DynamicResource NebulaSuccessBrush}"
+                                                       HorizontalAlignment="Center"/>
+                                            <TextBlock Text="✕" FontSize="13"
+                                                       IsVisible="{Binding IsFailed}"
+                                                       Foreground="{DynamicResource NebulaErrorBrush}"
+                                                       HorizontalAlignment="Center"/>
+                                        </Panel>
+
+                                        <!-- Name + progress -->
+                                        <StackPanel Grid.Column="1" Spacing="5" VerticalAlignment="Center">
+
+                                            <!-- Name + slug -->
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding Slug}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+
+                                            <!-- Progress bar + status -->
+                                            <Grid ColumnDefinitions="*,8,Auto">
+                                                <ProgressBar Grid.Column="0"
+                                                             Value="{Binding Progress}"
+                                                             Minimum="0" Maximum="1"
+                                                             Height="4"
+                                                             CornerRadius="2"
+                                                             Foreground="{DynamicResource NebulaAccentBrush}"
+                                                             Background="{DynamicResource NebulaSurface3Brush}"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding StatusText}"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource NebulaTextMutedBrush}"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+
+                                        </StackPanel>
+
+                                        <!-- Cancel / Dismiss button -->
+                                        <Button Grid.Column="2"
+                                                Classes="ghost"
+                                                Margin="14,0,0,0"
+                                                Padding="8,4"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding CancelCommand}"
+                                                IsVisible="{Binding IsActive}"
+                                                ToolTip.Tip="Cancel">
+                                            <TextBlock Text="✕" FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Button>
+                                        <Button Grid.Column="2"
+                                                Classes="ghost"
+                                                Margin="14,0,0,0"
+                                                Padding="8,4"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding DismissCommand}"
+                                                IsVisible="{Binding IsFinished}"
+                                                ToolTip.Tip="Dismiss">
+                                            <TextBlock Text="✕" FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Button>
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+            </Border>
+
+            </Panel>
 
         </Grid>
 
