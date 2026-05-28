@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Media;
@@ -247,41 +248,38 @@ public partial class ProjectHubViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Fired when a project should be opened.
+    /// Args: (project, engine install, engine exe path).
+    /// The view subscribes and shows the splash screen + launches the binary.
+    /// </summary>
+    public event Action<NebulaProject, EngineInstall, string>? OpenProjectRequested;
+
     private void HandleOpen(ProjectItemViewModel item)
     {
         item.Project.LastOpened = DateTime.UtcNow;
         _registry.AddOrUpdate(item.Project);
 
-        // Find the default registered engine install
+        // Resolve the default engine install
         var engineRegistry = EngineRegistry.Load();
         var engine = engineRegistry.Engines.FirstOrDefault(e => e.IsDefault)
                   ?? engineRegistry.Engines.FirstOrDefault();
 
         if (engine is null)
         {
-            ErrorMessage = "No engine installed. Go to Engine Versions and register an install first.";
+            ErrorMessage = "No engine installed. Go to Engine Versions and register one first.";
             return;
         }
 
-        var exe = System.IO.Path.Combine(engine.Path, "nebula");
-        if (!System.IO.File.Exists(exe))
+        var exe = Path.Combine(engine.Path, "nebula");
+        if (!File.Exists(exe))
         {
             ErrorMessage = $"Engine binary not found at:\n{exe}";
             return;
         }
 
-        try
-        {
-            System.Diagnostics.Process.Start(
-                new System.Diagnostics.ProcessStartInfo(exe, $"\"{item.Project.Path}\"")
-                {
-                    UseShellExecute = true,
-                });
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Failed to launch engine: {ex.Message}";
-        }
+        // Hand off to the view layer — it will show the splash and launch the process
+        OpenProjectRequested?.Invoke(item.Project, engine, exe);
     }
 
     private void HandleRemove(ProjectItemViewModel item)
