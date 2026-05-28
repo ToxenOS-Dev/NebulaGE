@@ -55,11 +55,24 @@ public partial class SettingsViewModel : ViewModelBase
 
     public bool NoIdesFound => DetectedIdes.Count == 0;
 
-    public ThemesViewModel       Themes { get; } = new();
+    public ThemesViewModel        Themes { get; } = new();
     public GitHubSessionViewModel GitHub => GitHubSessionViewModel.Current;
+
+    // ── Pass-through helpers for compiled-binding-safe single-level paths ──
+    // Compiled bindings struggle with two-level paths (GitHub.DeviceCode) when
+    // the intermediate property isn't [ObservableProperty]. Expose the string
+    // values directly here so XAML binds to {Binding DeviceCode} instead.
+    public string GitHubDeviceCode => GitHub.DeviceCode;
 
     public SettingsViewModel()
     {
+        // Relay DeviceCode changes from the singleton so single-level bindings update
+        GitHub.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(GitHubSessionViewModel.DeviceCode))
+                OnPropertyChanged(nameof(GitHubDeviceCode));
+        };
+
         var settings = SettingsService.Load();
 
         _defaultProjectLocation = settings.DefaultProjectLocation

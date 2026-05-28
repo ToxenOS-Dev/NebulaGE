@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 
@@ -7,21 +6,21 @@ namespace NebulaLauncher.Views;
 
 public partial class ColorPickerDialog : Window
 {
-    private readonly ColorPicker _picker = null!;
+    private readonly ColorView _picker = null!;
 
     // Required for XAML loader
     public ColorPickerDialog()
     {
         InitializeComponent();
-        _picker = this.FindControl<ColorPicker>("Picker")
-                  ?? throw new InvalidOperationException("ColorPicker 'Picker' not found.");
+        _picker = this.FindControl<ColorView>("Picker")
+                  ?? throw new InvalidOperationException("ColorView 'Picker' not found.");
     }
 
     public ColorPickerDialog(Color initial)
     {
         InitializeComponent();
-        _picker = this.FindControl<ColorPicker>("Picker")
-                  ?? throw new InvalidOperationException("ColorPicker 'Picker' not found in XAML.");
+        _picker = this.FindControl<ColorView>("Picker")
+                  ?? throw new InvalidOperationException("ColorView 'Picker' not found in XAML.");
         _picker.Color = initial;
     }
 

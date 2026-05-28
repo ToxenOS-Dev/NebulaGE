@@ -5,6 +5,7 @@
         x:Class="NebulaLauncher.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Nebula GE"
+        Icon="/Assets/NebulaGE-Logo.jpg"
         Width="1060" Height="700"
         MinWidth="820" MinHeight="560"
         TransparencyLevelHint="AcrylicBlur,Blur,Transparent"
@@ -113,16 +114,26 @@
 
                         <!-- Brand -->
                         <Border DockPanel.Dock="Top"
-                                Padding="18,16,16,14"
+                                Padding="18,14,16,14"
                                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                                 BorderThickness="0,0,0,1">
                             <StackPanel Spacing="2">
-                                <TextBlock Text="Nebula GE"
-                                           FontSize="17"
-                                           FontWeight="SemiBold"/>
-                                <TextBlock Text="v0.1.0"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+
+                                <!-- Logo + name on one row -->
+                                <StackPanel Orientation="Horizontal" Spacing="10"
+                                            VerticalAlignment="Center">
+                                    <Image Source="/Assets/NebulaGE-Logo-NoBackground.jpg"
+                                           Width="32" Height="32"
+                                           RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                                    <StackPanel Spacing="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Nebula GE"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"/>
+                                        <TextBlock Text="v0.1.0"
+                                                   FontSize="10"
+                                                   Foreground="{DynamicResource NebulaTextSubtleBrush}"/>
+                                    </StackPanel>
+                                </StackPanel>
 
                                 <!-- ── GitHub indicator ──────────────── -->
                                 <Border Margin="0,8,0,0"
@@ -172,8 +183,28 @@
                                                    Foreground="{DynamicResource NebulaTextBrush}"
                                                    VerticalAlignment="Center"/>
 
-                                        <!-- Not connected -->
-                                        <TextBlock IsVisible="{Binding GitHub.NoUser}"
+                                        <!-- Auth: device code chip -->
+                                        <Border IsVisible="{Binding GitHub.ShowDeviceCode}"
+                                                Background="{DynamicResource NebulaSurface3Brush}"
+                                                BorderBrush="{DynamicResource NebulaAccentBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="4"
+                                                Padding="6,2"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding GitHub.DeviceCode}"
+                                                       FontSize="10" FontWeight="Bold"
+                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                        </Border>
+
+                                        <!-- Auth: waiting for code -->
+                                        <TextBlock IsVisible="{Binding GitHub.AwaitingWithoutCode}"
+                                                   Text="Connecting…"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource NebulaAccentBrush}"
+                                                   VerticalAlignment="Center"/>
+
+                                        <!-- Idle: not connected -->
+                                        <TextBlock IsVisible="{Binding GitHub.IsNotConnectedIdle}"
                                                    Text="Not connected"
                                                    FontSize="11"
                                                    Foreground="{DynamicResource NebulaTextSubtleBrush}"

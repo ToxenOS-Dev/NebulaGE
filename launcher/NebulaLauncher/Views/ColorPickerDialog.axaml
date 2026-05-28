@@ -2,37 +2,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="NebulaLauncher.Views.ColorPickerDialog"
         Title="Pick a Color"
-        Width="340"
+        Width="360"
         SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         FontFamily="Inter,Segoe UI,system-ui,sans-serif"
         FontSize="13">
 
-    <Grid RowDefinitions="Auto,Auto,Auto"
-          Margin="20,16,20,20">
+    <StackPanel Margin="16,14,16,16" Spacing="12">
 
-        <!-- Color picker control -->
-        <ColorPicker Grid.Row="0"
-                     x:Name="Picker"
-                     HorizontalAlignment="Stretch"
-                     Margin="0,0,0,16"/>
+        <!-- Full inline color view -->
+        <ColorView x:Name="Picker"
+                   HorizontalAlignment="Stretch"/>
 
         <!-- Divider -->
-        <Border Grid.Row="1"
-                Height="1"
-                Background="{DynamicResource NebulaBorderBrush}"
-                Margin="0,0,0,12"/>
+        <Border Height="1"
+                Background="{DynamicResource NebulaBorderBrush}"/>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
+        <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="8">
             <Button Content="Cancel" MinWidth="72" Click="OnCancel"/>
             <Button Classes="accent" Content="Apply" MinWidth="72" Click="OnApply"/>
         </StackPanel>
 
-    </Grid>
+    </StackPanel>
 
 </Window>

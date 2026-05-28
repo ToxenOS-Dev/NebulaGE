@@ -207,27 +207,106 @@
                             <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
                                 <TextBlock Text="Not connected"
                                            FontSize="13" FontWeight="Medium"/>
-                                <!-- Awaiting browser auth hint -->
-                                <TextBlock IsVisible="{Binding GitHub.AwaitingBrowserAuth}"
-                                           Text="Complete sign-in in your browser, then click Refresh."
+
+                                <!-- Device code (shown once GitHub responds) -->
+                                <StackPanel IsVisible="{Binding GitHub.ShowDeviceCode}"
+                                            Spacing="8">
+                                    <TextBlock Text="Enter this code at github.com/login/device:"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+
+                                    <!-- Code chip + copy icon on one row -->
+                                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                                VerticalAlignment="Center">
+
+                                        <!-- Code displayed in an accent-bordered pill -->
+                                        <Border Background="{DynamicResource NebulaSurface3Brush}"
+                                                BorderBrush="{DynamicResource NebulaAccentBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="5"
+                                                Padding="12,6">
+                                            <TextBlock x:Name="DeviceCodeText"
+                                                       FontSize="18" FontWeight="Bold"
+                                                       Foreground="{DynamicResource NebulaAccentBrush}"/>
+                                        </Border>
+
+                                        <!-- Copy icon button -->
+                                        <Button Classes="ghost"
+                                                Padding="6"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding GitHub.CopyCodeCommand}"
+                                                ToolTip.Tip="Copy code to clipboard">
+                                            <Path Width="14" Height="14"
+                                                  Stretch="Uniform"
+                                                  Fill="{DynamicResource NebulaTextMutedBrush}"
+                                                  Data="M 13,1 H 5 C 4.45,1 4,1.45 4,2 V 3 H 2 C 1.45,3 1,3.45 1,4 V 14
+                                                        C 1,14.55 1.45,15 2,15 H 10 C 10.55,15 11,14.55 11,14 V 13 H 13
+                                                        C 13.55,13 14,12.55 14,12 V 2 C 14,1.45 13.55,1 13,1 Z
+                                                        M 9,13 H 3 V 5 H 9 V 13 Z
+                                                        M 12,11 H 11 V 4 C 11,3.45 10.55,3 10,3 H 6 V 2 H 12 Z"/>
+                                        </Button>
+
+                                        <!-- Reopen browser -->
+                                        <Button Classes="ghost"
+                                                Padding="6,4"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding GitHub.ReopenBrowserCommand}"
+                                                ToolTip.Tip="Reopen github.com/login/device in browser">
+                                            <TextBlock Text="Reopen browser"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                        </Button>
+
+                                    </StackPanel>
+
+                                    <TextBlock Text="Authorize in the browser — launcher updates automatically."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Waiting for GitHub to respond (before code arrives) -->
+                                <TextBlock IsVisible="{Binding GitHub.AwaitingWithoutCode}"
+                                           Text="Contacting GitHub…"
                                            FontSize="11"
-                                           Foreground="{DynamicResource NebulaAccentBrush}"
+                                           Foreground="{DynamicResource NebulaAccentBrush}"/>
+
+                                <!-- Error from last attempt -->
+                                <TextBlock IsVisible="{Binding GitHub.AuthError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Text="{Binding GitHub.AuthError}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource NebulaErrorBrush}"
                                            TextWrapping="Wrap"/>
-                                <TextBlock IsVisible="{Binding !GitHub.AwaitingBrowserAuth}"
+
+                                <!-- Idle -->
+                                <TextBlock IsVisible="{Binding GitHub.IsNotConnectedIdle}"
                                            Text="Connect to clone repositories and see repo links in projects."
                                            FontSize="11"
                                            Foreground="{DynamicResource NebulaTextMutedBrush}"
                                            TextWrapping="Wrap"/>
                             </StackPanel>
 
-                            <Button Grid.Column="1"
-                                    Classes="accent"
-                                    Padding="12,6"
-                                    VerticalAlignment="Center"
-                                    Margin="12,0,0,0"
-                                    IsEnabled="{Binding !GitHub.IsBusy}"
-                                    Command="{Binding GitHub.LoginCommand}"
-                                    Content="{Binding GitHub.LoginButtonLabel}"/>
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="6"
+                                        VerticalAlignment="Center"
+                                        Margin="12,0,0,0">
+
+                                <!-- Cancel — only visible while connecting -->
+                                <Button IsVisible="{Binding GitHub.AwaitingBrowserAuth}"
+                                        Padding="12,6"
+                                        Command="{Binding GitHub.CancelLoginCommand}">
+                                    Cancel
+                                </Button>
+
+                                <!-- Connect / Connecting… -->
+                                <Button Classes="accent"
+                                        Padding="12,6"
+                                        IsEnabled="{Binding !GitHub.IsBusy}"
+                                        Command="{Binding GitHub.LoginCommand}"
+                                        Content="{Binding GitHub.LoginButtonLabel}"/>
+
+                            </StackPanel>
                         </Grid>
                     </Border>
 
