@@ -8,6 +8,9 @@ using CommunityToolkit.Mvvm.Input;
 using NebulaLauncher.Models;
 using NebulaLauncher.Services;
 
+// Alias so we can call Avalonia's FontFamily without ambiguity
+using AvaloniaFontFamily = Avalonia.Media.FontFamily;
+
 namespace NebulaLauncher.ViewModels;
 
 // ── Single color row ──────────────────────────────────────────────────────────
@@ -132,11 +135,81 @@ public partial class ThemesViewModel : ViewModelBase
     /// </summary>
     public AppearanceViewModel Appearance => AppearanceViewModel.Current;
 
+    // ── Font picker ──────────────────────────────────────
+
+    public ObservableCollection<string> UIFonts   { get; } = [];
+    public ObservableCollection<string> MonoFonts { get; } = [];
+
+    [ObservableProperty] private string? _selectedUIFont;
+    [ObservableProperty] private string? _selectedMonoFont;
+
+    partial void OnSelectedUIFontChanged(string? value)
+    {
+        if (value is null) return;
+        ApplyFont("NebulaUIFontFamily", value);
+        SettingsService.Update(s => s.UiFontFamily = value);
+    }
+
+    partial void OnSelectedMonoFontChanged(string? value)
+    {
+        if (value is null) return;
+        ApplyFont("NebulaMonoFontFamily", value);
+        SettingsService.Update(s => s.MonoFontFamily = value);
+    }
+
+    private static void ApplyFont(string resourceKey, string familyName)
+    {
+        if (Avalonia.Application.Current is { } app)
+            app.Resources[resourceKey] = AvaloniaFontFamily.Parse(familyName);
+    }
+
     public ThemesViewModel()
     {
         _activePreset = ThemeService.LoadActive();
         BuildPresets();
         BuildSections();
+        LoadFontsAsync();
+    }
+
+    private void LoadFontsAsync()
+    {
+        var settings = SettingsService.Load();
+
+        // Load font lists on a background thread — fc-list can take ~200 ms
+        System.Threading.Tasks.Task.Run(() =>
+        {
+            var uiFonts   = FontScanService.GetUIFonts();
+            var monoFonts = FontScanService.GetMonoFonts();
+
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                UIFonts.Clear();
+                foreach (var f in uiFonts) UIFonts.Add(f);
+
+                MonoFonts.Clear();
+                foreach (var f in monoFonts) MonoFonts.Add(f);
+
+                // Restore saved selections (without triggering the Apply side-effects)
+                // Assign backing fields directly to restore saved values without
+                // triggering OnSelectedXxxFontChanged (which would call Apply+Save).
+#pragma warning disable MVVMTK0034
+                _selectedUIFont   = settings.UiFontFamily   ?? BestMatch(UIFonts,   "Inter", "Cantarell");
+                _selectedMonoFont = settings.MonoFontFamily ?? BestMatch(MonoFonts, "Cascadia Code", "Liberation Mono");
+#pragma warning restore MVVMTK0034
+
+                OnPropertyChanged(nameof(SelectedUIFont));
+                OnPropertyChanged(nameof(SelectedMonoFont));
+            });
+        });
+    }
+
+    /// Returns the first name from <paramref name="preferred"/> that exists in
+    /// <paramref name="list"/>, falling back to the first item in the list.
+    private static string? BestMatch(ObservableCollection<string> list, params string[] preferred)
+    {
+        foreach (var name in preferred)
+            if (list.Contains(name, StringComparer.OrdinalIgnoreCase)) return name;
+        return list.FirstOrDefault();
     }
 
     // ── Preset strip ─────────────────────────────────────

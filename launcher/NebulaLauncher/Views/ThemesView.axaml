@@ -101,7 +101,7 @@
                                                     <!-- Hex input -->
                                                     <TextBox Grid.Column="2"
                                                              Text="{Binding HexInput}"
-                                                             FontFamily="Cascadia Code,JetBrains Mono,monospace"
+                                                             FontFamily="{DynamicResource NebulaMonoFontFamily}"
                                                              FontSize="12"
                                                              Padding="8,5"
                                                              VerticalAlignment="Center"/>
@@ -117,6 +117,82 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
+            <!-- ── Typography ───────────────────────────── -->
+            <StackPanel Margin="0,28,0,0" Spacing="0">
+
+                <TextBlock Text="TYPOGRAPHY"
+                           FontSize="10" FontWeight="Medium"
+                           Foreground="{DynamicResource NebulaTextSubtleBrush}"
+                           LetterSpacing="1.2"
+                           Margin="0,0,0,8"/>
+
+                <Border Background="{DynamicResource NebulaSurfaceBrush}"
+                        BorderBrush="{DynamicResource NebulaBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="6">
+                    <StackPanel Spacing="0">
+
+                        <!-- UI Font -->
+                        <Border BorderBrush="{DynamicResource NebulaBorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="UI Font"
+                                               FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="Font used for all interface text."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          ItemsSource="{Binding UIFonts}"
+                                          SelectedItem="{Binding SelectedUIFont}"
+                                          MinWidth="200"
+                                          VerticalAlignment="Center"
+                                          Margin="16,0,0,0">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       FontFamily="{Binding}"
+                                                       FontSize="13"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                        <!-- Mono Font -->
+                        <Border Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="Monospace Font"
+                                               FontSize="13" FontWeight="Medium"/>
+                                    <TextBlock Text="Used in hex inputs and code areas."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource NebulaTextMutedBrush}"/>
+                                </StackPanel>
+                                <ComboBox Grid.Column="1"
+                                          ItemsSource="{Binding MonoFonts}"
+                                          SelectedItem="{Binding SelectedMonoFont}"
+                                          MinWidth="200"
+                                          VerticalAlignment="Center"
+                                          Margin="16,0,0,0">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       FontFamily="{Binding}"
+                                                       FontSize="13"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
 
             <!-- ── Visual Effects ─────────────────────────── -->
             <StackPanel Margin="0,28,0,0" Spacing="0">

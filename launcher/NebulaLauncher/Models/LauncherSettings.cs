@@ -37,4 +37,13 @@ public class LauncherSettings
     /// <summary>True = grid card view; false = compact list view.</summary>
     [JsonPropertyName("projectGridView")]
     public bool ProjectGridView { get; set; } = false;
+
+    // ── Typography ────────────────────────────────────────────────────────────
+    /// <summary>UI font family. Null → use the built-in default.</summary>
+    [JsonPropertyName("uiFontFamily")]
+    public string? UiFontFamily { get; set; }
+
+    /// <summary>Monospace font family (used in hex inputs, code areas). Null → built-in default.</summary>
+    [JsonPropertyName("monoFontFamily")]
+    public string? MonoFontFamily { get; set; }
 }

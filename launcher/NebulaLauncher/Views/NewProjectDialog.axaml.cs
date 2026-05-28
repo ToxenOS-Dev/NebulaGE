@@ -58,6 +58,7 @@ public partial class NewProjectDialog : Window
 
     private void CreateAndClose(NewProjectDialogViewModel vm)
     {
+        vm.ErrorMessage = null;
         try
         {
             var project = _service.Create(
@@ -69,9 +70,7 @@ public partial class NewProjectDialog : Window
         }
         catch (Exception ex)
         {
-            // Surface the error in the VM error banner (if wired) or swallow
-            _ = ex;
-            Close(null);
+            vm.ErrorMessage = ex.Message;
         }
     }
 
@@ -82,9 +81,10 @@ public partial class NewProjectDialog : Window
         var cloneUrl = NewProjectDialogViewModel.NormalizeCloneUrl(vm.CloneUrl) ?? vm.CloneUrl.Trim();
         var dest     = Path.Combine(vm.Location, vm.ProjectName.Trim());
 
-        // Disable UI while cloning
-        IsEnabled = false;
+        vm.ErrorMessage = null;
+        vm.IsBusy       = true;
 
+        string? stderr = null;
         try
         {
             Directory.CreateDirectory(vm.Location);
@@ -99,27 +99,39 @@ public partial class NewProjectDialog : Window
             });
 
             if (proc is not null)
+            {
+                stderr = await proc.StandardError.ReadToEndAsync();
                 await proc.WaitForExitAsync();
+            }
 
             if (proc?.ExitCode == 0 && Directory.Exists(dest))
             {
-                // Register the cloned project
                 var project = new NebulaProject
                 {
-                    Name      = vm.ProjectName.Trim(),
-                    Path      = dest,
-                    GitHubUrl = NewProjectDialogViewModel.NormalizeCloneUrl(vm.CloneUrl),
-                    Created   = DateTime.UtcNow,
+                    Name       = vm.ProjectName.Trim(),
+                    Path       = dest,
+                    GitHubUrl  = NewProjectDialogViewModel.NormalizeCloneUrl(vm.CloneUrl),
+                    Created    = DateTime.UtcNow,
                     LastOpened = DateTime.UtcNow,
                 };
                 await Dispatcher.UIThread.InvokeAsync(() => Close(project));
                 return;
             }
-        }
-        catch { }
 
-        // Clone failed — re-enable and let user fix the URL
-        await Dispatcher.UIThread.InvokeAsync(() => IsEnabled = true);
+            // Clone failed — surface the git stderr
+            var hint = string.IsNullOrWhiteSpace(stderr)
+                ? "Check the URL and your internet connection."
+                : stderr.Trim();
+            vm.ErrorMessage = $"Clone failed: {hint}";
+        }
+        catch (Exception ex)
+        {
+            vm.ErrorMessage = $"Clone error: {ex.Message}";
+        }
+        finally
+        {
+            vm.IsBusy = false;
+        }
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) =>

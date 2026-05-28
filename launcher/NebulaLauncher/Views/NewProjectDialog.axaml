@@ -277,19 +277,50 @@
         <Border Grid.Row="2"
                 BorderBrush="{DynamicResource NebulaBorderBrush}"
                 BorderThickness="0,1,0,0">
-            <Grid ColumnDefinitions="*,Auto,8,Auto"
-                  Margin="24,13,24,16">
-                <Button Grid.Column="1"
-                        Content="Cancel"
-                        MinWidth="88" Padding="14,7"
-                        Click="OnCancel"/>
-                <Button Grid.Column="3"
-                        Classes="accent"
-                        Content="{Binding CreateButtonLabel}"
-                        MinWidth="140" Padding="14,7"
-                        IsEnabled="{Binding CanCreate}"
-                        Click="OnCreate"/>
-            </Grid>
+            <StackPanel>
+
+                <!-- Error banner — only visible when ErrorMessage is set -->
+                <Border IsVisible="{Binding HasError}"
+                        Background="{DynamicResource NebulaErrorSurfaceBrush}"
+                        BorderBrush="{DynamicResource NebulaErrorBorderBrush}"
+                        BorderThickness="0,0,0,1"
+                        Padding="20,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding ErrorMessage}"
+                                   Foreground="{DynamicResource NebulaErrorTextBrush}"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                        <Button Grid.Column="1"
+                                Classes="ghost"
+                                Padding="8,4"
+                                Margin="12,0,0,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding DismissErrorCommand}"
+                                ToolTip.Tip="Dismiss">
+                            <TextBlock Text="✕" FontSize="11"
+                                       Foreground="{DynamicResource NebulaErrorTextBrush}"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Buttons row -->
+                <Grid ColumnDefinitions="*,Auto,8,Auto"
+                      Margin="24,13,24,16">
+                    <Button Grid.Column="1"
+                            Content="Cancel"
+                            MinWidth="88" Padding="14,7"
+                            Click="OnCancel"/>
+                    <Button Grid.Column="3"
+                            Classes="accent"
+                            Content="{Binding CreateButtonLabel}"
+                            MinWidth="140" Padding="14,7"
+                            IsEnabled="{Binding CanCreate}"
+                            Click="OnCreate"/>
+                </Grid>
+
+            </StackPanel>
         </Border>
 
     </Grid>

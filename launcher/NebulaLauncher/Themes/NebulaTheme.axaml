@@ -78,12 +78,16 @@
         <x:Boolean x:Key="NebulaSidebarBlurEnabled">False</x:Boolean>
         <x:Boolean x:Key="NebulaGlassEnabled">False</x:Boolean>
 
+        <!-- Typography — overridden at runtime by ThemesViewModel when the user picks a font -->
+        <FontFamily x:Key="NebulaUIFontFamily">Inter,Segoe UI,system-ui,sans-serif</FontFamily>
+        <FontFamily x:Key="NebulaMonoFontFamily">Cascadia Code,Liberation Mono,DejaVu Sans Mono,Courier New,monospace</FontFamily>
+
     </Styles.Resources>
 
     <!-- ── Window ─────────────────────────────────────── -->
     <Style Selector="Window">
         <Setter Property="Background"  Value="{DynamicResource NebulaBgBrush}"/>
-        <Setter Property="FontFamily"  Value="Inter,Segoe UI,system-ui,sans-serif"/>
+        <Setter Property="FontFamily"  Value="{DynamicResource NebulaUIFontFamily}"/>
         <Setter Property="FontSize"    Value="13"/>
         <Setter Property="Foreground"  Value="{DynamicResource NebulaTextBrush}"/>
     </Style>

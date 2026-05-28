@@ -243,7 +243,37 @@ public partial class ProjectHubViewModel : ViewModelBase
     {
         item.Project.LastOpened = DateTime.UtcNow;
         _registry.AddOrUpdate(item.Project);
-        // TODO: open editor window
+
+        // Find the default registered engine install
+        var engineRegistry = EngineRegistry.Load();
+        var engine = engineRegistry.Engines.FirstOrDefault(e => e.IsDefault)
+                  ?? engineRegistry.Engines.FirstOrDefault();
+
+        if (engine is null)
+        {
+            ErrorMessage = "No engine installed. Go to Engine Versions and register an install first.";
+            return;
+        }
+
+        var exe = System.IO.Path.Combine(engine.Path, "nebula");
+        if (!System.IO.File.Exists(exe))
+        {
+            ErrorMessage = $"Engine binary not found at:\n{exe}";
+            return;
+        }
+
+        try
+        {
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(exe, $"\"{item.Project.Path}\"")
+                {
+                    UseShellExecute = true,
+                });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to launch engine: {ex.Message}";
+        }
     }
 
     private void HandleRemove(ProjectItemViewModel item)

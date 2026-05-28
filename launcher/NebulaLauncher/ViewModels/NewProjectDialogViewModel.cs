@@ -96,6 +96,20 @@ public partial class NewProjectDialogViewModel : ViewModelBase
     [ObservableProperty]
     private TemplateOption _selectedTemplate;
 
+    // ── Busy / error state ───────────────────────────────────
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanCreate))]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    private string? _errorMessage;
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+    [RelayCommand]
+    private void DismissError() => ErrorMessage = null;
+
     // ── Clone URL ─────────────────────────────────────────────
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCreate))]
@@ -124,10 +138,10 @@ public partial class NewProjectDialogViewModel : ViewModelBase
     }
 
     // ── Derived ──────────────────────────────────────────────
-    public bool   CanCreate         => IsCloneMode
+    public bool   CanCreate         => !IsBusy && (IsCloneMode
                                            ? HasValidCloneUrl && !string.IsNullOrWhiteSpace(ProjectName)
-                                           : !string.IsNullOrWhiteSpace(ProjectName);
-    public string CreateButtonLabel => IsCloneMode ? "Clone & Open" : "+ Create Project";
+                                           : !string.IsNullOrWhiteSpace(ProjectName));
+    public string CreateButtonLabel => IsBusy ? "Working…" : IsCloneMode ? "Clone & Open" : "+ Create Project";
 
     // ── Constructor ──────────────────────────────────────────
     public NewProjectDialogViewModel()
