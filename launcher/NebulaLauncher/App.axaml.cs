@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using NebulaLauncher.Services;
 using NebulaLauncher.ViewModels;
 using NebulaLauncher.Views;
@@ -15,8 +16,9 @@ public partial class App : Application
     {
         RunFirstTimeSetup();
 
-        // Apply the saved theme then appearance flags before any windows open
+        // Apply the saved theme, fonts, and appearance flags before any windows open
         ThemeManager.Apply(ThemeService.LoadActive());
+        ApplySavedFonts();
         AppearanceViewModel.Current.Apply();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -28,6 +30,20 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    // ── Font restore ─────────────────────────────────────────
+
+    private void ApplySavedFonts()
+    {
+        var settings = SettingsService.Load();
+        var res      = Resources;
+
+        if (!string.IsNullOrWhiteSpace(settings.UiFontFamily))
+            res["NebulaUIFontFamily"] = FontFamily.Parse(settings.UiFontFamily);
+
+        if (!string.IsNullOrWhiteSpace(settings.MonoFontFamily))
+            res["NebulaMonoFontFamily"] = FontFamily.Parse(settings.MonoFontFamily);
     }
 
     // ── First-run setup ───────────────────────────────────────
