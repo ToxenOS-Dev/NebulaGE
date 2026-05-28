@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NebulaLauncher.Models;
@@ -121,8 +122,9 @@ public partial class ProjectItemViewModel : ViewModelBase
 
 public partial class ProjectHubViewModel : ViewModelBase
 {
-    private readonly ProjectService _service = new();
-    private ProjectRegistry         _registry;
+    private readonly ProjectService        _service = new();
+    private readonly ProjectWatcherService _watcher = new();
+    private ProjectRegistry                _registry;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasProjects))]
@@ -178,11 +180,17 @@ public partial class ProjectHubViewModel : ViewModelBase
 
         // Auto-add cloned projects when the download tray finishes a clone
         DownloadManagerViewModel.Current.CloneCompleted += AddProject;
+
+        // File-system watcher: react to folders being deleted or new ones appearing
+        _watcher.ProjectFolderDeleted  += OnProjectFolderDeleted;
+        _watcher.ProjectFolderAppeared += OnProjectFolderAppeared;
+        RefreshWatcher();
     }
 
     ~ProjectHubViewModel()
     {
         DownloadManagerViewModel.Current.CloneCompleted -= AddProject;
+        _watcher.Dispose();
     }
 
     // ── Public API for code-behind ────────────────────────────
@@ -201,6 +209,7 @@ public partial class ProjectHubViewModel : ViewModelBase
         Projects.Insert(0, new ProjectItemViewModel(project, HandleOpen, HandleRemove));
         _registry.AddOrUpdate(project);
         NotifyListChanged();
+        RefreshWatcher();
     }
 
     public void OpenFromPath(string path)
@@ -224,11 +233,59 @@ public partial class ProjectHubViewModel : ViewModelBase
 
     private void ReloadProjects()
     {
+        // Prune projects whose directories were deleted while the app was closed
+        var missing = _registry.Projects
+            .Where(p => !Directory.Exists(p.Path))
+            .ToList();
+        foreach (var p in missing)
+            _registry.Remove(p);
+
         var items = _registry.Projects
             .Select(p => new ProjectItemViewModel(p, HandleOpen, HandleRemove));
 
         Projects = new ObservableCollection<ProjectItemViewModel>(items);
         _ = RefreshGitStatusAsync(Projects.ToList());
+    }
+
+    // ── File-system watcher callbacks ─────────────────────────
+
+    private void OnProjectFolderDeleted(string path)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            var item = Projects.FirstOrDefault(p =>
+                string.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
+            if (item is null) return;
+
+            _registry.Remove(item.Project);
+            Projects.Remove(item);
+            NotifyListChanged();
+            RefreshWatcher();
+        });
+    }
+
+    private void OnProjectFolderAppeared(string path)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            // Already in the list?
+            if (Projects.Any(p => string.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var project = _service.Open(path);
+            if (project is null) return;
+
+            AddProject(project);
+            // AddProject already calls RefreshWatcher via NotifyListChanged path
+        });
+    }
+
+    /// <summary>Rebuilds the watcher set after the project list changes.</summary>
+    private void RefreshWatcher()
+    {
+        var defaultDir = SettingsService.Load().DefaultProjectLocation
+                      ?? NewProjectDialogViewModel.DefaultProjectsPath;
+        _watcher.Refresh(Projects.Select(p => p.Path), defaultDir);
     }
 
     private static async Task RefreshGitStatusAsync(
@@ -287,6 +344,7 @@ public partial class ProjectHubViewModel : ViewModelBase
         _registry.Remove(item.Project);
         Projects.Remove(item);
         NotifyListChanged();
+        RefreshWatcher();
     }
 
     private void NotifyListChanged()
